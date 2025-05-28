@@ -1,40 +1,54 @@
-# カップル・夫婦専用家計アプリ 要件定義書
-
-[ふたりの家計](futarino-kakei.com)  
+# カップル・夫婦専用家計アプリ「ふたりの家計」
 
 ## プロダクト概要
 カップル・夫婦が共同で家計管理を行うためのWebアプリケーション
 
 ### 技術スタック
-- フロントエンド: Next.js 14+
-  - [Next.jsドキュメント](https://nextjs.org/docs)
-  - TypeScript使用
-  - Tailwind CSS
-- バックエンド(API): Laravel 11+
-  - [Laravelドキュメント](https://laravel.com/docs/12.x/releases)
+- **フロントエンド**: Next.js 14+ (App Router)
+  - TypeScript
+  - Material-UI (MUI)
+  - Zustand (状態管理)
+  - React Hook Form
+- **バックエンド**: Laravel 11+
   - PHP 8.2+
   - MySQL 8.0+
-- 認証: Laravel Sanctum
-- デプロイ: Vercel (フロントエンド), AWS/VPS (バックエンド)
+  - Laravel Sanctum (認証)
+- **開発環境**: Docker Compose
+- **デプロイ**: Vercel (フロントエンド), AWS/VPS (バックエンド)
 
 ### 開発環境セットアップ
 
 #### 前提条件
-- Node.js 18+
-- PHP 8.2+
-- Composer
-- MySQL 8.0+
+- Docker Desktop
+- Git
 
-#### フロントエンド (Next.js)
+#### Docker環境での起動（推奨）
 ```bash
-cd frontend
+# リポジトリをクローン
+git clone https://github.com/takeshi-arihori/futarino-kakei.git
+cd futarino-kakei
+
+# Docker Composeで全サービスを起動
+docker compose up -d
+
+# アプリケーションにアクセス
+# フロントエンド: http://localhost:3000
+# バックエンドAPI: http://localhost:8000/api
+# Nginx (リバースプロキシ): http://localhost
+# MySQL: localhost:3307
+```
+
+#### 個別環境での起動
+##### フロントエンド (Next.js)
+```bash
+cd front-end
 npm install
 npm run dev
 ```
 
-#### バックエンド (Laravel)
+##### バックエンド (Laravel)
 ```bash
-cd backend
+cd back-end
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -42,57 +56,73 @@ php artisan migrate
 php artisan serve
 ```
 
-### API仕様概要
+### 実装済み機能
+
+#### ✅ 認証システム
+- ユーザー登録・ログイン
+- JWT認証
+- 認証状態の永続化とキャッシュ（5分間）
+- パフォーマンス最適化済み
+
+#### ✅ 基本画面構成
+- ダッシュボード
+- ログイン・登録画面
+- レスポンシブデザイン
+
+#### ✅ 開発環境
+- Docker Compose統合環境
+- フロントエンド・バックエンド・DB・Nginxの連携
+- CORS設定済み
+
+### API仕様
 
 #### 認証エンドポイント
 - `POST /api/register` - ユーザー登録
 - `POST /api/login` - ログイン
 - `POST /api/logout` - ログアウト
+- `GET /api/user` - 認証ユーザー情報取得
 
-#### 支出管理エンドポイント
+#### 支出管理エンドポイント（実装予定）
 - `GET /api/expenses` - 支出一覧取得
 - `POST /api/expenses` - 支出登録
 - `PUT /api/expenses/{id}` - 支出更新
 - `DELETE /api/expenses/{id}` - 支出削除
 
-#### 精算エンドポイント
-- `GET /api/settlements` - 精算履歴取得
-- `POST /api/settlements` - 精算実行
+### データベース設計
 
-### データベース設計概要
-
-#### 主要テーブル
+#### 実装済みテーブル
 - `users` - ユーザー情報
 - `couples` - カップル関係管理
 - `expenses` - 支出記録
-- `categories` - カテゴリマスタ
-- `settlements` - 精算履歴
-- `budgets` - 予算設定
+- `personal_access_tokens` - 認証トークン
 
 ### プロジェクト構造
 ```
 futarino-kakei/
-├── frontend/          # Next.js アプリケーション
+├── front-end/         # Next.js アプリケーション
 │   ├── src/
 │   │   ├── app/       # App Router
 │   │   ├── components/
 │   │   ├── lib/
+│   │   ├── store/     # Zustand状態管理
 │   │   └── types/
 │   ├── public/
+│   ├── Dockerfile
 │   └── package.json
-├── backend/           # Laravel API
+├── back-end/          # Laravel API
 │   ├── app/
-│   │   ├── Http/Controllers/
-│   │   ├── Models/
-│   │   └── Services/
+│   │   ├── Http/Controllers/Api/
+│   │   └── Models/
 │   ├── database/
 │   │   ├── migrations/
 │   │   └── seeders/
 │   ├── routes/
+│   ├── nginx.conf     # Nginx設定
+│   ├── Dockerfile
 │   └── composer.json
-└── docs/             # ドキュメント
-    ├── api.md
-    └── deployment.md
+├── docker-compose.yml # Docker環境設定
+├── README-Docker.md   # Docker詳細ガイド
+└── README.md         # このファイル
 ```
 
 ### 機能要件
@@ -185,24 +215,43 @@ futarino-kakei/
 - 将来的な収入管理機能追加に対応
 - 追加機能の実装余地を確保
 
-### 開発優先順位（提案）
-#### Phase 1（MVP）
-- ユーザー管理機能
-- 基本的な支出記録機能
+### 開発ロードマップ
+
+#### ✅ Phase 1（完了）- 基盤構築
+- ユーザー認証システム
+- 基本画面構成（ダッシュボード、ログイン、登録）
+- Docker開発環境
+- パフォーマンス最適化（認証キャッシュ、リダイレクト高速化）
+
+#### 🚧 Phase 2（開発中）- 支出管理機能
+- 支出記録機能
+- カテゴリ管理
+- 支出一覧・編集・削除
 - 個別・共通ページ表示
-- 基本的な精算機能
 
-#### Phase 2
-- カテゴリ管理機能
+#### 📋 Phase 3（予定）- 分担・精算機能
 - 分担比率設定
-- CSV入出力機能
-- 基本レポート機能
+- 精算計算・実行
+- 精算履歴管理
 
-#### Phase 3
+#### 📋 Phase 4（予定）- 分析・レポート機能
+- 月次・年次レポート
+- グラフ・チャート表示
+- カテゴリ別分析
+
+#### 📋 Phase 5（予定）- 高度な機能
 - 予算管理機能
 - 通知機能
-- 高度な分析・可視化機能
+- CSV入出力
 - UI/UX改善
+
+### パフォーマンス最適化
+
+#### 実装済み最適化
+- **認証キャッシュ**: 5分間のキャッシュでAPI呼び出しを削減
+- **重複処理防止**: 同時実行される認証チェックを制御
+- **条件付きAPI呼び出し**: 必要な場合のみAPIリクエストを実行
+- **高速リダイレクト**: 認証状態に基づく即座のページ遷移
 
 ### 開発ガイドライン
 
@@ -213,25 +262,30 @@ futarino-kakei/
 
 #### ブランチ戦略
 - `main`: 本番環境
-- `develop`: 開発環境
 - `feature/*`: 機能開発
 - `hotfix/*`: 緊急修正
 
 #### テスト方針
 - **フロントエンド**: Jest + React Testing Library
 - **バックエンド**: PHPUnit
-- **E2E**: Playwright
+- **E2E**: Playwright（予定）
 
-### ライセンス
-MIT License
+### トラブルシューティング
+
+#### よくある問題
+1. **Docker起動エラー**: Docker Desktopが起動していることを確認
+2. **ポート競合**: 他のアプリケーションがポート3000, 8000, 80を使用していないか確認
+3. **認証エラー**: バックエンドAPIサーバーが正常に起動していることを確認
+
+詳細なトラブルシューティングは [README-Docker.md](./README-Docker.md) を参照してください。
 
 ### コントリビューション
 プルリクエストを歓迎します。大きな変更を行う場合は、まずIssueを作成して議論してください。
 
-### 連絡先
-- プロジェクト管理者: [連絡先情報]
-- Issue報告: [GitHubリポジトリのIssues]
+### ライセンス
+このプロジェクトはMITライセンスの下で公開されています。
 
 ---
 
-最終更新: 2024年12月
+**現在のバージョン**: v1.0.0-alpha  
+**最終更新**: 2025年5月28日
