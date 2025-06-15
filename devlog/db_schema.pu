@@ -1,0 +1,119 @@
+@startuml
+!theme spacelab
+
+' --- テーブル定義 ---
+
+entity "users" {
+  + id [PK] : INT
+  --
+  name : VARCHAR(255)
+  email : VARCHAR(255) <<UNIQUE>>
+  password_hash : VARCHAR(255)
+  couple_id [FK] : INT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "couples" {
+  + id [PK] : INT
+  --
+  name : VARCHAR(255)
+  default_split_user1 : TINYINT
+  default_split_user2 : TINYINT
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "categories" {
+  + id [PK] : INT
+  --
+  couple_id [FK] : INT
+  name : VARCHAR(255)
+  color : VARCHAR(50)
+  default_split_user1 : TINYINT
+  default_split_user2 : TINYINT
+  is_custom : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "expenses" {
+  + id [PK] : BIGINT
+  --
+  couple_id [FK] : INT
+  category_id [FK] : INT
+  paid_by_user_id [FK] : INT
+  date : DATE
+  amount : DECIMAL(10, 2)
+  memo : TEXT
+  split_user1 : TINYINT
+  split_user2 : TINYINT
+  is_settled : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "budgets" {
+  + id [PK] : INT
+  --
+  couple_id [FK] : INT
+  target_month : DATE <<UNIQUE>> ' e.g., '2025-06-01'
+  monthly_total : DECIMAL(12, 2)
+  category_budgets : JSON ' e.g., {"cat_id_1": 50000, "cat_id_2": 10000}
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+entity "settlements" {
+  + id [PK] : INT
+  --
+  couple_id [FK] : INT
+  settlement_date : DATE
+  period_start : DATE
+  period_end : DATE
+  details : JSON ' Stores calculation results
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' 精算と支出の中間テーブル (多対多)
+entity "settlement_expenses" {
+  settlement_id [PK, FK] : INT
+  expense_id [PK, FK] : BIGINT
+}
+
+
+' --- リレーションシップ定義 ---
+
+couples "1" -- "2" users : has
+couples "1" -- "0..*" categories : manages
+couples "1" -- "0..*" expenses : has
+couples "1" -- "0..*" budgets : sets
+couples "1" -- "0..*" settlements : performs
+
+categories --{ expenses
+
+users --{ expenses
+
+settlements "1" -- "1..*" settlement_expenses : covers
+expenses "1" -- "0..1" settlement_expenses : is covered by
+
+
+@enduml
+```
+
+**図の説明:**
+
+* **各エンティティ（テーブル）:**
+    * `users`: ユーザー情報を管理します。各ユーザーは1つの`couples`に所属します。
+    * `couples`: カップル情報を管理する中心的なテーブルです。
+    * `categories`: カップルごとに管理される支出カテゴリです。
+    * `expenses`: 日々の支出データを記録します。
+    * `budgets`: カップルごとに月次の予算を設定します。
+    * `settlements`: 精算の履歴を記録します。
+    * `settlement_expenses`: どの精算がどの支出をカバーしたかを記録する**中間テーブル**です。これにより、支出と精算の多対多の関係を表現しています。
+* **リレーションシップ:**
+    * 線はテーブル間の関連を示します。例えば `couples "1" -- "2" users` は、1つのカップルに2人のユーザーが紐づくことを意味します。
+    * `--{` は、多数側（many）を示します（例: 1つのカテゴリに多数の支出が紐づく）。
+
+このDDLは、要件定義書の内容を網羅し、拡張性も考慮した正規化されたデータベース構造となっています。後ほど、この図を基に実際のデータベースを構築する際の参考にしてくだ

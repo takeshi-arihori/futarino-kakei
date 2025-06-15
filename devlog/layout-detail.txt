@@ -1,0 +1,1331 @@
+import React, { useState, useEffect, useMemo } from 'react';
+
+// Lucide-reactのアイコンを模倣 (実際のプロジェクトでは `lucide-react` をインストールして使用)
+const HomeIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+const PlusCircleIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>;
+const ListIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>;
+const SettingsIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.73l-.15.1a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l-.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1 0-2.73l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
+const UsersIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+const PieChartIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>;
+const LogOutIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>;
+const ChevronDownIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>;
+const CalendarIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
+const Edit3Icon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>;
+const Trash2Icon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="m8 6 2-4h4l2 4"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
+const FilterIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>;
+const DollarSignIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>;
+const TagIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>;
+const CheckCircleIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
+
+
+// モックデータ
+const mockUser1 = { id: 'user1', name: 'あなた', avatar: 'https://placehold.co/100x100/E2E8F0/4A5568?text=A' };
+const mockUser2 = { id: 'user2', name: 'パートナー', avatar: 'https://placehold.co/100x100/E2E8F0/4A5568?text=P' };
+
+const initialCategories = [
+  { id: 'cat1', name: '食費', color: 'bg-blue-500', defaultSplit: { user1: 50, user2: 50 }, isCustom: false },
+  { id: 'cat2', name: '光熱費', color: 'bg-green-500', defaultSplit: { user1: 60, user2: 40 }, isCustom: false },
+  { id: 'cat3', name: '家賃', color: 'bg-red-500', defaultSplit: { user1: 50, user2: 50 }, isCustom: false },
+  { id: 'cat4', name: '交通費', color: 'bg-yellow-500', defaultSplit: { user1: 70, user2: 30 }, isCustom: false },
+  { id: 'cat5', name: '娯楽費', color: 'bg-purple-500', defaultSplit: { user1: 50, user2: 50 }, isCustom: false },
+  { id: 'cat6', name: '日用品', color: 'bg-pink-500', defaultSplit: { user1: 50, user2: 50 }, isCustom: false },
+  { id: 'cat7', name: '医療費', color: 'bg-teal-500', defaultSplit: { user1: 50, user2: 50 }, isCustom: false },
+  { id: 'cat8', name: 'その他', color: 'bg-gray-500', defaultSplit: { user1: 50, user2: 50 }, isCustom: false },
+];
+
+const mockCoupleProfile = {
+  coupleName: 'わたしたちの家計簿',
+  user1: mockUser1,
+  user2: mockUser2,
+  defaultSplit: { user1: 50, user2: 50 },
+};
+
+// Shadcn/ui風コンポーネント (変更なし)
+const Button = ({ children, variant = 'default', size = 'default', className = '', ...props }) => {
+  const baseStyle = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background";
+  const variants = {
+    default: "bg-slate-900 text-white hover:bg-slate-800",
+    destructive: "bg-red-500 text-white hover:bg-red-600",
+    outline: "border border-slate-300 hover:bg-slate-100",
+    secondary: "bg-slate-200 text-slate-900 hover:bg-slate-300",
+    ghost: "hover:bg-slate-100",
+    link: "underline-offset-4 hover:underline text-slate-900",
+  };
+  const sizes = {
+    default: "h-10 py-2 px-4",
+    sm: "h-9 px-3 rounded-md",
+    lg: "h-11 px-8 rounded-md",
+  };
+  return <button className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>{children}</button>;
+};
+
+const Input = ({ className = '', ...props }) => (
+  <input className={`flex h-10 w-full rounded-md border border-slate-300 bg-transparent py-2 px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`} {...props} />
+);
+
+const Label = ({ children, htmlFor, className = '' }) => (
+  <label htmlFor={htmlFor} className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${className}`}>{children}</label>
+);
+
+const Select = ({ children, className = '', ...props }) => (
+  <select className={`flex h-10 w-full items-center justify-between rounded-md border border-slate-300 bg-transparent py-2 px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 ${className}`} {...props}>
+    {children}
+  </select>
+);
+
+const Card = ({ children, className = '' }) => (
+  <div className={`rounded-xl border bg-white text-slate-900 shadow ${className}`}>
+    {children}
+  </div>
+);
+const CardHeader = ({ children, className = '' }) => <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>{children}</div>;
+const CardTitle = ({ children, className = '' }) => <h3 className={`text-lg font-semibold leading-none tracking-tight ${className}`}>{children}</h3>;
+const CardDescription = ({ children, className = '' }) => <p className={`text-sm text-slate-500 ${className}`}>{children}</p>;
+const CardContent = ({ children, className = '' }) => <div className={`p-6 pt-0 ${className}`}>{children}</div>;
+const CardFooter = ({ children, className = '' }) => <div className={`flex items-center p-6 pt-0 ${className}`}>{children}</div>;
+
+// タブコンポーネント (変更なし)
+const Tabs = ({ children, defaultValue, className }) => {
+  const [activeTab, setActiveTab] = useState(defaultValue);
+  const tabs = React.Children.toArray(children).filter(child => child.type === TabsList || child.type === TabsContent);
+  const list = tabs.find(child => child.type === TabsList);
+  const contents = tabs.filter(child => child.type === TabsContent);
+
+  return (
+    <div className={className}>
+      {React.cloneElement(list, { activeTab, setActiveTab })}
+      {contents.map((content, idx) => React.cloneElement(content, { key: idx, activeTab }))}
+    </div>
+  );
+};
+
+const TabsList = ({ children, activeTab, setActiveTab, className }) => (
+  <div className={`inline-flex h-10 items-center justify-center rounded-md bg-slate-100 p-1 text-slate-500 ${className}`}>
+    {React.Children.map(children, child => React.cloneElement(child, { activeTab, setActiveTab }))}
+  </div>
+);
+
+const TabsTrigger = ({ children, value, activeTab, setActiveTab, className }) => (
+  <button
+    onClick={() => setActiveTab(value)}
+    className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${activeTab === value ? 'bg-white text-slate-900 shadow-sm' : ''} ${className}`}
+  >
+    {children}
+  </button>
+);
+
+const TabsContent = ({ children, value, activeTab, className }) => (
+  <div className={`${activeTab === value ? 'block' : 'hidden'} mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${className}`}>
+    {children}
+  </div>
+);
+
+// 分担比率入力コンポーネント (変更なし)
+const SplitRatioInput = ({ user1, user2, split, onSplitChange, presets = [] }) => {
+  const [splitUser1, setSplitUser1] = useState(split.user1);
+  const [splitUser2, setSplitUser2] = useState(split.user2);
+  const [isLocked, setIsLocked] = useState(true); // デフォルトでロック状態にする
+
+  useEffect(() => {
+    setSplitUser1(split.user1);
+    setSplitUser2(split.user2);
+  }, [split]);
+
+  const handleUser1Change = (e) => {
+    let value = parseInt(e.target.value, 10);
+    if (isNaN(value) || value < 0) value = 0;
+    if (value > 100) value = 100;
+    
+    setSplitUser1(value);
+    if (isLocked) {
+      const newSplitUser2 = 100 - value;
+      setSplitUser2(newSplitUser2);
+      onSplitChange({ user1: value, user2: newSplitUser2 });
+    } else {
+      onSplitChange({ user1: value, user2: splitUser2 });
+    }
+  };
+
+  const handleUser2Change = (e) => {
+    let value = parseInt(e.target.value, 10);
+    if (isNaN(value) || value < 0) value = 0;
+    if (value > 100) value = 100;
+
+    setSplitUser2(value);
+    if (isLocked) {
+      const newSplitUser1 = 100 - value;
+      setSplitUser1(newSplitUser1);
+      onSplitChange({ user1: newSplitUser1, user2: value });
+    } else {
+      onSplitChange({ user1: splitUser1, user2: value });
+    }
+  };
+  
+  const handlePreset = (presetSplit) => {
+    setSplitUser1(presetSplit.user1);
+    setSplitUser2(presetSplit.user2);
+    onSplitChange(presetSplit);
+  };
+
+  const toggleLock = () => {
+    const newLockState = !isLocked;
+    setIsLocked(newLockState);
+    if (newLockState) { // ロック状態になった時
+        if (splitUser1 + splitUser2 !== 100) {
+            // どちらかを優先するか、あるいは均等に近づけるか。ここではuser1を優先
+            const adjustedUser2 = 100 - splitUser1;
+            setSplitUser2(adjustedUser2 < 0 ? 0 : adjustedUser2);
+            onSplitChange({ user1: splitUser1, user2: adjustedUser2 < 0 ? 0 : adjustedUser2 });
+        }
+    }
+  }
+
+  const totalSplit = splitUser1 + splitUser2;
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center space-x-4">
+        <div className="flex-1">
+          <Label htmlFor={`splitUser1_${user1.id}`}>{user1.name}</Label>
+          <div className="flex items-center space-x-2">
+            <Input type="number" id={`splitUser1_${user1.id}`} value={splitUser1} onChange={handleUser1Change} min="0" max="100" className="w-20 text-center" />
+            <span>%</span>
+          </div>
+        </div>
+        <div className="flex-1">
+          <Label htmlFor={`splitUser2_${user2.id}`}>{user2.name}</Label>
+          <div className="flex items-center space-x-2">
+            <Input type="number" id={`splitUser2_${user2.id}`} value={splitUser2} onChange={handleUser2Change} min="0" max="100" className="w-20 text-center" />
+            <span>%</span>
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+            <input type="checkbox" id={`lockRatio_${user1.id}_${user2.id}`} checked={isLocked} onChange={toggleLock} className="rounded"/>
+            <Label htmlFor={`lockRatio_${user1.id}_${user2.id}`} className="text-sm">割合を固定 (合計100%)</Label>
+        </div>
+        {totalSplit !== 100 && (
+          <p className="text-sm text-red-500">合計が100%になりません ({totalSplit}%)</p>
+        )}
+      </div>
+      {presets.length > 0 && (
+        <div className="flex flex-wrap gap-2 pt-2">
+          {presets.map((preset, index) => (
+            <Button key={index} variant="outline" size="sm" onClick={() => handlePreset(preset.split)}>
+              {preset.label}
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+// 支出入力画面 (変更なし)
+const ExpenseInputScreen = ({ user1, user2, categories, onAddExpense, editingExpense, onUpdateExpense, setCurrentPage }) => {
+  const isEditing = !!editingExpense;
+  const today = new Date().toISOString().split('T')[0];
+
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState(today);
+  const [categoryId, setCategoryId] = useState(categories.length > 0 ? categories[0].id : '');
+  const [paidBy, setPaidBy] = useState(user1.id);
+  const [memo, setMemo] = useState('');
+  const [split, setSplit] = useState(mockCoupleProfile.defaultSplit);
+
+  const selectedCategory = categories.find(c => c.id === categoryId);
+
+  useEffect(() => {
+    if (isEditing) {
+      setAmount(editingExpense.amount.toString());
+      setDate(editingExpense.date);
+      setCategoryId(editingExpense.categoryId);
+      setPaidBy(editingExpense.paidBy);
+      setMemo(editingExpense.memo);
+      setSplit(editingExpense.split);
+    } else {
+      // 新規作成時のデフォルト設定
+      setAmount('');
+      setDate(today);
+      setCategoryId(categories.length > 0 ? categories[0].id : '');
+      setPaidBy(user1.id);
+      setMemo('');
+      if (selectedCategory && selectedCategory.defaultSplit) {
+        setSplit(selectedCategory.defaultSplit);
+      } else {
+        setSplit(mockCoupleProfile.defaultSplit);
+      }
+    }
+  }, [isEditing, editingExpense, categories, user1.id, today]);
+
+  useEffect(() => {
+    // カテゴリ変更時にデフォルトの分担比率を適用 (編集時以外)
+    if (!isEditing) {
+        if (selectedCategory && selectedCategory.defaultSplit) {
+          setSplit(selectedCategory.defaultSplit);
+        } else {
+          setSplit(mockCoupleProfile.defaultSplit); // カテゴリにない場合は全体のデフォルト
+        }
+    }
+  }, [categoryId, categories, isEditing, selectedCategory]);
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!amount || !date || !categoryId || !paidBy) {
+      alert("必須項目を入力してください。"); // 本来はカスタムダイアログ
+      return;
+    }
+    if (split.user1 + split.user2 !== 100) {
+      alert("分担比率の合計は100%にしてください。"); // 本来はカスタムダイアログ
+      return;
+    }
+    
+    const expenseData = {
+      amount: parseFloat(amount),
+      date,
+      categoryId,
+      paidBy,
+      memo,
+      split,
+    };
+
+    if (isEditing) {
+      onUpdateExpense({ ...editingExpense, ...expenseData });
+      alert("支出を更新しました！");
+    } else {
+      onAddExpense({ id: `exp-${Date.now()}`, ...expenseData, settled: false }); // 仮ID, settledフラグ追加
+      alert("支出を記録しました！");
+    }
+    setCurrentPage('expenseList'); // 支出一覧へ遷移
+  };
+
+  const splitPresets = [
+    { label: "50:50", split: { user1: 50, user2: 50 } },
+    { label: `${user1.name} 全額`, split: { user1: 100, user2: 0 } },
+    { label: `${user2.name} 全額`, split: { user1: 0, user2: 100 } },
+    { label: "60:40", split: { user1: 60, user2: 40 } },
+    { label: "70:30", split: { user1: 70, user2: 30 } },
+  ];
+
+  return (
+    <div className="p-4 md:p-6">
+      <h2 className="text-2xl font-semibold mb-6">{isEditing ? '支出を編集する' : '支出を記録する'}</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="amount">金額 <span className="text-red-500">*</span></Label>
+                <Input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="例: 3000" required />
+              </div>
+              <div>
+                <Label htmlFor="date">日付 <span className="text-red-500">*</span></Label>
+                <div className="relative">
+                    <Input type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+                    <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                </div>
+              </div>
+            </div>
+            <div className="mt-6">
+              <Label htmlFor="category">カテゴリ <span className="text-red-500">*</span></Label>
+              <Select id="category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </Select>
+            </div>
+            <div className="mt-6">
+              <Label htmlFor="paidBy">支払った人 <span className="text-red-500">*</span></Label>
+              <Select id="paidBy" value={paidBy} onChange={(e) => setPaidBy(e.target.value)} required>
+                <option value={user1.id}>{user1.name}</option>
+                <option value={user2.id}>{user2.name}</option>
+              </Select>
+            </div>
+            <div className="mt-6">
+              <Label htmlFor="memo">メモ</Label>
+              <Input type="text" id="memo" value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="例: スーパーでの買い物" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>分担比率を設定</CardTitle>
+            <CardDescription>この支出をどのように分担しますか？</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SplitRatioInput
+              user1={user1}
+              user2={user2}
+              split={split}
+              onSplitChange={setSplit}
+              presets={splitPresets}
+            />
+          </CardContent>
+        </Card>
+        
+        <div className="flex justify-between items-center">
+            <Button type="button" variant="outline" onClick={() => setCurrentPage('expenseList')}>キャンセル</Button>
+            <Button type="submit" size="lg">{isEditing ? '更新する' : '登録する'}</Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+
+// 支出一覧画面
+const ExpenseListScreen = ({ expenses, categories, user1, user2, onDeleteExpense, onEditExpense, setCurrentPage }) => {
+  const [filterDateStart, setFilterDateStart] = useState('');
+  const [filterDateEnd, setFilterDateEnd] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterUser, setFilterUser] = useState(''); // 'user1', 'user2', or '' for all
+
+  const filteredExpenses = useMemo(() => {
+    return expenses
+      .filter(exp => {
+        if (filterDateStart && exp.date < filterDateStart) return false;
+        if (filterDateEnd && exp.date > filterDateEnd) return false;
+        if (filterCategory && exp.categoryId !== filterCategory) return false;
+        if (filterUser && exp.paidBy !== filterUser) return false;
+        return true;
+      })
+      .sort((a, b) => new Date(b.date) - new Date(a.date)); // 新しい順
+  }, [expenses, filterDateStart, filterDateEnd, filterCategory, filterUser]);
+
+  const getCategoryName = (id) => categories.find(c => c.id === id)?.name || '未分類';
+  const getUserName = (id) => id === user1.id ? user1.name : user2.name;
+
+  const handleDelete = (expenseId) => {
+    // 本来はカスタム確認ダイアログ
+    if (window.confirm('この支出を削除してもよろしいですか？精算済みの場合は削除できません。')) {
+      const expense = expenses.find(e => e.id === expenseId);
+      if (expense && !expense.settled) {
+        onDeleteExpense(expenseId);
+      } else {
+        alert('精算済みの支出は削除できません。');
+      }
+    }
+  };
+  
+  const handleEdit = (expense) => {
+    if (expense.settled) {
+        alert('精算済みの支出は編集できません。');
+        return;
+    }
+    onEditExpense(expense); // AppコンポーネントでeditingExpenseをセットし、入力画面に遷移
+  }
+
+  return (
+    <div className="p-4 md:p-6">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <h2 className="text-2xl font-semibold">支出一覧</h2>
+        <Button onClick={() => setCurrentPage('expenseInput')}>
+          <PlusCircleIcon className="mr-2 h-5 w-5" /> 新規支出を登録
+        </Button>
+      </div>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center"><FilterIcon className="mr-2 h-5 w-5 text-slate-600" /> フィルタ</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <Label htmlFor="filterDateStart">開始日</Label>
+              <Input type="date" id="filterDateStart" value={filterDateStart} onChange={e => setFilterDateStart(e.target.value)} />
+            </div>
+            <div>
+              <Label htmlFor="filterDateEnd">終了日</Label>
+              <Input type="date" id="filterDateEnd" value={filterDateEnd} onChange={e => setFilterDateEnd(e.target.value)} />
+            </div>
+            <div>
+              <Label htmlFor="filterCategory">カテゴリ</Label>
+              <Select id="filterCategory" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
+                <option value="">すべて</option>
+                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="filterUser">支払者</Label>
+              <Select id="filterUser" value={filterUser} onChange={e => setFilterUser(e.target.value)}>
+                <option value="">すべて</option>
+                <option value={user1.id}>{user1.name}</option>
+                <option value={user2.id}>{user2.name}</option>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {filteredExpenses.length === 0 ? (
+        <Card><CardContent><p className="text-center text-slate-500 py-8">該当する支出はありません。</p></CardContent></Card>
+      ) : (
+        <div className="space-y-4">
+          {filteredExpenses.map(exp => (
+            <Card key={exp.id} className={`${exp.settled ? 'bg-slate-100 opacity-70' : ''}`}>
+              <CardContent className="pt-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                  <div>
+                    <div className="flex items-center mb-1">
+                      <span className={`w-3 h-3 rounded-full mr-2 ${categories.find(c=>c.id === exp.categoryId)?.color || 'bg-gray-400'}`}></span>
+                      <span className="font-semibold text-lg">¥{exp.amount.toLocaleString()}</span>
+                      {exp.settled && <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full">精算済み</span>}
+                    </div>
+                    <p className="text-slate-600 text-sm">{getCategoryName(exp.categoryId)} - {exp.date}</p>
+                    {exp.memo && <p className="text-xs text-slate-500 mt-1">メモ: {exp.memo}</p>}
+                  </div>
+                  <div className="mt-2 md:mt-0 md:text-right">
+                    <p className="text-sm">支払者: {getUserName(exp.paidBy)}</p>
+                    <p className="text-xs text-slate-500">
+                      {user1.name}: ¥{Math.round(exp.amount * (exp.split.user1 / 100)).toLocaleString()} ({exp.split.user1}%)
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {user2.name}: ¥{Math.round(exp.amount * (exp.split.user2 / 100)).toLocaleString()} ({exp.split.user2}%)
+                    </p>
+                  </div>
+                </div>
+                {!exp.settled && (
+                    <div className="mt-3 pt-3 border-t border-slate-200 flex justify-end space-x-2">
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(exp)}><Edit3Icon className="w-4 h-4 mr-1" />編集</Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDelete(exp.id)}><Trash2Icon className="w-4 h-4 mr-1" />削除</Button>
+                    </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+// ダッシュボード画面
+const DashboardScreen = ({ user1, user2, expenses, categories, budget, setCurrentPage, settlements }) => {
+  const unsettledExpenses = expenses.filter(exp => !exp.settled);
+  const totalSpentThisMonth = unsettledExpenses
+    .filter(exp => new Date(exp.date).getMonth() === new Date().getMonth() && new Date(exp.date).getFullYear() === new Date().getFullYear())
+    .reduce((sum, exp) => sum + exp.amount, 0);
+  
+  const budgetRemaining = budget.monthlyTotal - totalSpentThisMonth;
+
+  // パートナーとのバランス計算ロジック (簡易版)
+  let balanceUser1ToUser2 = 0;
+  unsettledExpenses.forEach(exp => {
+    const user1ShouldPay = exp.amount * (exp.split.user1 / 100);
+    const user2ShouldPay = exp.amount * (exp.split.user2 / 100);
+    if (exp.paidBy === user1.id) { // user1が支払った
+      balanceUser1ToUser2 -= user2ShouldPay; // user2はuser1にuser2ShouldPayを支払うべき
+    } else { // user2が支払った
+      balanceUser1ToUser2 += user1ShouldPay; // user1はuser2にuser1ShouldPayを支払うべき
+    }
+  });
+  
+  const lastSettlement = settlements.length > 0 ? settlements.sort((a,b) => new Date(b.date) - new Date(a.date))[0] : null;
+
+
+  return (
+    <div className="p-4 md:p-6 space-y-6">
+      <h1 className="text-3xl font-bold">こんにちは、{user1.name}さん！</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>今月の未精算支出</CardTitle>
+            <CardDescription>{new Date().getMonth() + 1}月の合計</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">¥{totalSpentThisMonth.toLocaleString()}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>予算残高</CardTitle>
+            <CardDescription>今月の残り予算（未精算支出ベース）</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className={`text-3xl font-bold ${budgetRemaining < 0 ? 'text-red-500' : 'text-green-500'}`}>
+              ¥{budgetRemaining.toLocaleString()}
+            </p>
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+              <div 
+                className="bg-blue-600 h-2.5 rounded-full" 
+                style={{ width: `${Math.max(0, Math.min(100, (totalSpentThisMonth / budget.monthlyTotal) * 100))}%` }}>
+              </div>
+            </div>
+             <p className="text-xs text-gray-500 mt-1">{budget.monthlyTotal > 0 ? Math.round((totalSpentThisMonth / budget.monthlyTotal) * 100) : 0}% 使用済み</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>パートナーとのバランス</CardTitle>
+            <CardDescription>未精算分について</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {balanceUser1ToUser2 === 0 ? (
+              <p className="text-lg text-green-600 font-semibold">現在、貸し借りなし</p>
+            ) : balanceUser1ToUser2 > 0 ? (
+              <p className="text-lg">{user1.name}が {user2.name}に <span className="font-bold text-orange-500">¥{Math.abs(balanceUser1ToUser2).toLocaleString()}</span> 支払う</p>
+            ) : (
+              <p className="text-lg">{user2.name}が {user1.name}に <span className="font-bold text-blue-500">¥{Math.abs(balanceUser1ToUser2).toLocaleString()}</span> 支払う</p>
+            )}
+            <p className="text-xs text-slate-500 mt-1">（詳細は精算ページで確認）</p>
+             {lastSettlement && (
+                <p className="text-xs text-slate-500 mt-2">最終精算日: {lastSettlement.date}</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader className="flex-row justify-between items-center">
+          <CardTitle>最近の未精算支出</CardTitle>
+          <Button variant="link" size="sm" onClick={() => setCurrentPage('expenseList')}>すべて表示</Button>
+        </CardHeader>
+        <CardContent>
+          {unsettledExpenses.length === 0 ? (
+            <p className="text-slate-500">未精算の支出はありません。</p>
+          ) : (
+            <ul className="space-y-3">
+              {unsettledExpenses.slice(0, 5).map(exp => {
+                const category = categories.find(c => c.id === exp.categoryId);
+                const paidByUser = exp.paidBy === user1.id ? user1 : user2;
+                return (
+                  <li key={exp.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${category?.color || 'bg-gray-400'}`}></div>
+                      <div>
+                        <p className="font-medium">{category?.name || '未分類'}: ¥{exp.amount.toLocaleString()}</p>
+                        <p className="text-xs text-slate-500">{exp.date} / {paidByUser.name}が支払い</p>
+                      </div>
+                    </div>
+                     <div className="flex space-x-2">
+                        <Button variant="ghost" size="sm" className="p-1 h-auto" onClick={() => { setCurrentPage('expenseInput'); onEditExpense(exp);}}><Edit3Icon className="w-4 h-4" /></Button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+      
+      <div className="flex space-x-4">
+          <Button size="lg" className="flex-1" onClick={() => setCurrentPage('expenseInput')}>
+            <PlusCircleIcon className="mr-2 h-5 w-5" /> 新しい支出を記録
+          </Button>
+          <Button variant="secondary" size="lg" className="flex-1" onClick={() => setCurrentPage('settlement')}>
+            <CheckCircleIcon className="mr-2 h-5 w-5" /> 精算する
+          </Button>
+      </div>
+    </div>
+  );
+};
+
+
+// 分担比率設定画面 (変更なし)
+const SplitRatioSettingsScreen = ({ user1, user2, coupleProfile, categories, onUpdateCoupleDefaultSplit, onUpdateCategoryDefaultSplit }) => {
+  const [coupleDefaultSplit, setCoupleDefaultSplit] = useState(coupleProfile.defaultSplit);
+  const [categorySplits, setCategorySplits] = useState(
+    categories.reduce((acc, cat) => {
+      acc[cat.id] = cat.defaultSplit || coupleProfile.defaultSplit;
+      return acc;
+    }, {})
+  );
+
+  const handleCoupleDefaultSplitChange = (newSplit) => {
+    setCoupleDefaultSplit(newSplit);
+  };
+
+  const handleCategorySplitChange = (categoryId, newSplit) => {
+    setCategorySplits(prev => ({ ...prev, [categoryId]: newSplit }));
+  };
+
+  const saveCoupleDefaultSplit = () => {
+    if (coupleDefaultSplit.user1 + coupleDefaultSplit.user2 !== 100) {
+      alert("カップル全体の分担比率の合計は100%にしてください。");
+      return;
+    }
+    onUpdateCoupleDefaultSplit(coupleDefaultSplit);
+    alert("カップル全体のデフォルト分担比率を更新しました。");
+  };
+
+  const saveCategorySplit = (categoryId) => {
+    const splitToSave = categorySplits[categoryId];
+    if (splitToSave.user1 + splitToSave.user2 !== 100) {
+      alert(`${categories.find(c=>c.id === categoryId).name}の分担比率の合計は100%にしてください。`);
+      return;
+    }
+    onUpdateCategoryDefaultSplit(categoryId, splitToSave);
+     alert(`${categories.find(c=>c.id === categoryId).name}のデフォルト分担比率を更新しました。`);
+  };
+  
+  const presets = [
+    { label: "50:50", split: { user1: 50, user2: 50 } },
+    { label: `${user1.name} 全額`, split: { user1: 100, user2: 0 } },
+    { label: `${user2.name} 全額`, split: { user1: 0, user2: 100 } },
+  ];
+
+  return (
+    <div className="p-4 md:p-6 space-y-8">
+      <h2 className="text-2xl font-semibold">分担比率の設定</h2>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>カップル全体のデフォルト分担比率</CardTitle>
+          <CardDescription>新しい支出を記録する際の初期値となります。</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SplitRatioInput
+            user1={user1}
+            user2={user2}
+            split={coupleDefaultSplit}
+            onSplitChange={handleCoupleDefaultSplitChange}
+            presets={presets}
+          />
+        </CardContent>
+        <CardFooter>
+          <Button onClick={saveCoupleDefaultSplit}>全体のデフォルトを保存</Button>
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>カテゴリ別のデフォルト分担比率</CardTitle>
+          <CardDescription>カテゴリごとに分担比率の初期値を設定できます。設定しない場合はカップル全体のデフォルト比率が適用されます。</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {categories.map(category => (
+            <div key={category.id} className="p-4 border rounded-lg">
+              <h4 className="font-medium mb-1 flex items-center">
+                <span className={`w-3 h-3 rounded-full mr-2 ${category.color}`}></span>
+                {category.name}
+              </h4>
+              <SplitRatioInput
+                user1={user1}
+                user2={user2}
+                split={categorySplits[category.id]}
+                onSplitChange={(newSplit) => handleCategorySplitChange(category.id, newSplit)}
+                presets={presets}
+              />
+              <div className="mt-3 text-right">
+                <Button variant="outline" size="sm" onClick={() => saveCategorySplit(category.id)}>
+                  {category.name}の比率を保存
+                </Button>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+// カテゴリ管理画面
+const CategoryManagementScreen = ({ categories, onAddCategory, onUpdateCategory, user1, user2, coupleProfile }) => {
+    const [newCategoryName, setNewCategoryName] = useState('');
+    const [newCategoryColor, setNewCategoryColor] = useState('bg-gray-400'); // デフォルト色
+    const [newCategorySplit, setNewCategorySplit] = useState(coupleProfile.defaultSplit);
+    const [editingCategory, setEditingCategory] = useState(null); // { id, name, color, defaultSplit }
+
+    const colorOptions = [
+        'bg-red-500', 'bg-orange-500', 'bg-amber-500', 'bg-yellow-500', 'bg-lime-500',
+        'bg-green-500', 'bg-emerald-500', 'bg-teal-500', 'bg-cyan-500', 'bg-sky-500',
+        'bg-blue-500', 'bg-indigo-500', 'bg-violet-500', 'bg-purple-500', 'bg-fuchsia-500',
+        'bg-pink-500', 'bg-rose-500', 'bg-slate-500',
+    ];
+    const splitPresets = [
+      { label: "50:50", split: { user1: 50, user2: 50 } },
+      { label: `${user1.name} 全額`, split: { user1: 100, user2: 0 } },
+      { label: `${user2.name} 全額`, split: { user1: 0, user2: 100 } },
+    ];
+
+
+    const handleAddOrUpdateCategory = () => {
+        const name = editingCategory ? editingCategory.name : newCategoryName;
+        const color = editingCategory ? editingCategory.color : newCategoryColor;
+        const split = editingCategory ? editingCategory.defaultSplit : newCategorySplit;
+
+        if (!name.trim()) {
+            alert('カテゴリ名を入力してください。');
+            return;
+        }
+        if (split.user1 + split.user2 !== 100) {
+            alert('分担比率の合計は100%にしてください。');
+            return;
+        }
+
+        if (editingCategory) {
+            onUpdateCategory({ ...editingCategory, defaultSplit: split });
+            alert('カテゴリを更新しました。');
+            setEditingCategory(null);
+        } else {
+            onAddCategory({ name, color, defaultSplit: split, isCustom: true });
+            alert('新しいカテゴリを追加しました。');
+            setNewCategoryName('');
+            setNewCategoryColor('bg-gray-400');
+            setNewCategorySplit(coupleProfile.defaultSplit);
+        }
+    };
+    
+    const startEdit = (category) => {
+        setEditingCategory({...category}); // 編集用にコピー
+    };
+
+    const cancelEdit = () => {
+        setEditingCategory(null);
+        // 新規追加フォームもリセット
+        setNewCategoryName('');
+        setNewCategoryColor('bg-gray-400');
+        setNewCategorySplit(coupleProfile.defaultSplit);
+    };
+
+
+    return (
+        <div className="p-4 md:p-6 space-y-8">
+            <h2 className="text-2xl font-semibold">カテゴリ管理</h2>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>{editingCategory ? 'カスタムカテゴリを編集' : '新しいカスタムカテゴリを追加'}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div>
+                        <Label htmlFor="categoryName">カテゴリ名</Label>
+                        <Input 
+                            type="text" 
+                            id="categoryName" 
+                            value={editingCategory ? editingCategory.name : newCategoryName} 
+                            onChange={e => editingCategory ? setEditingCategory({...editingCategory, name: e.target.value}) : setNewCategoryName(e.target.value)}
+                            placeholder="例: ペット用品" 
+                        />
+                    </div>
+                    <div>
+                        <Label>カテゴリカラー</Label>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                            {colorOptions.map(color => (
+                                <button 
+                                    key={color} 
+                                    type="button"
+                                    className={`w-8 h-8 rounded-full border-2 ${ (editingCategory ? editingCategory.color : newCategoryColor) === color ? 'border-blue-600 ring-2 ring-blue-300' : 'border-transparent' } ${color}`}
+                                    onClick={() => editingCategory ? setEditingCategory({...editingCategory, color: color}) : setNewCategoryColor(color)}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        <Label>デフォルト分担比率</Label>
+                         <SplitRatioInput
+                            user1={user1}
+                            user2={user2}
+                            split={editingCategory ? editingCategory.defaultSplit : newCategorySplit}
+                            onSplitChange={split => editingCategory ? setEditingCategory({...editingCategory, defaultSplit: split}) : setNewCategorySplit(split)}
+                            presets={splitPresets}
+                        />
+                    </div>
+                </CardContent>
+                <CardFooter className="justify-end space-x-2">
+                    {editingCategory && <Button variant="outline" onClick={cancelEdit}>キャンセル</Button>}
+                    <Button onClick={handleAddOrUpdateCategory}>{editingCategory ? '更新する' : '追加する'}</Button>
+                </CardFooter>
+            </Card>
+
+            <Card>
+                <CardHeader><CardTitle>既存のカテゴリ</CardTitle></CardHeader>
+                <CardContent>
+                    <ul className="space-y-3">
+                        {categories.map(cat => (
+                            <li key={cat.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                <div className="flex items-center">
+                                    <span className={`w-4 h-4 rounded-full mr-3 ${cat.color}`}></span>
+                                    <span className="font-medium">{cat.name}</span>
+                                    {!cat.isCustom && <span className="ml-2 text-xs bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">デフォルト</span>}
+                                </div>
+                                {cat.isCustom && (
+                                    <Button variant="ghost" size="sm" onClick={() => startEdit(cat)}>
+                                        <Edit3Icon className="w-4 h-4 mr-1"/>編集
+                                    </Button>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// 予算管理画面
+const BudgetScreen = ({ budget, onUpdateBudget, categories, user1, user2 }) => {
+    const [monthlyTotal, setMonthlyTotal] = useState(budget.monthlyTotal);
+    const [categoryBudgets, setCategoryBudgets] = useState(budget.categories || {}); // { categoryId: amount }
+
+    const handleCategoryBudgetChange = (categoryId, amount) => {
+        const newAmount = parseFloat(amount);
+        setCategoryBudgets(prev => ({
+            ...prev,
+            [categoryId]: isNaN(newAmount) || newAmount < 0 ? 0 : newAmount,
+        }));
+    };
+
+    const handleSubmit = () => {
+        const totalCategoryBudget = Object.values(categoryBudgets).reduce((sum, val) => sum + (val || 0), 0);
+        if (monthlyTotal > 0 && totalCategoryBudget > monthlyTotal) {
+            if (!window.confirm('カテゴリ別予算の合計が月次総予算を超えています。このまま保存しますか？')) {
+                 // 本来はカスタムダイアログ
+                return;
+            }
+        }
+        onUpdateBudget({ monthlyTotal, categories: categoryBudgets });
+        alert('予算設定を更新しました。');
+    };
+    
+    // 仮の支出データで実績を計算 (実際はAppから渡す)
+    const mockExpensesForBudget = [
+        { categoryId: 'cat1', amount: 15000 }, { categoryId: 'cat1', amount: 10000 },
+        { categoryId: 'cat2', amount: 8000 }, { categoryId: 'cat5', amount: 20000 },
+    ];
+
+    const actualSpendingByCategory = mockExpensesForBudget.reduce((acc, exp) => {
+        acc[exp.categoryId] = (acc[exp.categoryId] || 0) + exp.amount;
+        return acc;
+    }, {});
+    const totalActualSpending = Object.values(actualSpendingByCategory).reduce((sum, val) => sum + val, 0);
+
+
+    return (
+        <div className="p-4 md:p-6 space-y-8">
+            <h2 className="text-2xl font-semibold">予算管理</h2>
+            <Card>
+                <CardHeader>
+                    <CardTitle>月次総予算</CardTitle>
+                    <CardDescription>1ヶ月の全体の予算上限を設定します。</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Label htmlFor="monthlyTotalBudget">総予算額</Label>
+                    <div className="flex items-center">
+                        <Input type="number" id="monthlyTotalBudget" value={monthlyTotal} onChange={e => setMonthlyTotal(parseFloat(e.target.value) || 0)} className="w-40 mr-2" placeholder="例: 250000" />
+                        <span>円</span>
+                    </div>
+                     <div className="mt-4">
+                        <p className="text-sm">実績: ¥{totalActualSpending.toLocaleString()}</p>
+                        {monthlyTotal > 0 && (
+                            <>
+                                <div className="w-full bg-gray-200 rounded-full h-4 mt-1">
+                                    <div 
+                                        className={`h-4 rounded-full ${totalActualSpending > monthlyTotal ? 'bg-red-500' : 'bg-blue-600'}`}
+                                        style={{ width: `${Math.min(100, (totalActualSpending / monthlyTotal) * 100)}%` }}>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">{Math.round((totalActualSpending / monthlyTotal) * 100)}% 使用</p>
+                            </>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>カテゴリ別予算</CardTitle>
+                    <CardDescription>カテゴリごとに予算を設定します。設定しない場合は個別の追跡は行われません。</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {categories.map(cat => {
+                        const categoryBudgetAmount = categoryBudgets[cat.id] || 0;
+                        const categoryActualSpending = actualSpendingByCategory[cat.id] || 0;
+                        return (
+                            <div key={cat.id} className="p-3 border rounded-lg">
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor={`budget-${cat.id}`} className="flex items-center">
+                                        <span className={`w-3 h-3 rounded-full mr-2 ${cat.color}`}></span>{cat.name}
+                                    </Label>
+                                    <div className="flex items-center">
+                                        <Input 
+                                            type="number" 
+                                            id={`budget-${cat.id}`} 
+                                            value={categoryBudgetAmount} 
+                                            onChange={e => handleCategoryBudgetChange(cat.id, e.target.value)} 
+                                            className="w-32 text-right"
+                                            placeholder="0"
+                                        />
+                                        <span className="ml-2">円</span>
+                                    </div>
+                                </div>
+                                {categoryBudgetAmount > 0 && (
+                                    <div className="mt-2">
+                                        <p className="text-xs">実績: ¥{categoryActualSpending.toLocaleString()}</p>
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                                            <div 
+                                                className={`h-2.5 rounded-full ${categoryActualSpending > categoryBudgetAmount ? 'bg-red-400' : 'bg-green-500'}`}
+                                                style={{ width: `${Math.min(100, (categoryActualSpending / categoryBudgetAmount) * 100)}%` }}>
+                                            </div>
+                                        </div>
+                                         <p className="text-xs text-gray-500 mt-0.5">{Math.round((categoryActualSpending / categoryBudgetAmount) * 100)}% 使用</p>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </CardContent>
+            </Card>
+            <div className="flex justify-end">
+                <Button onClick={handleSubmit} size="lg">予算設定を保存</Button>
+            </div>
+        </div>
+    );
+};
+
+// 精算画面
+const SettlementScreen = ({ expenses, user1, user2, settlements, onAddSettlement, setCurrentPage }) => {
+    const today = new Date().toISOString().split('T')[0];
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const [startDate, setStartDate] = useState(oneMonthAgo.toISOString().split('T')[0]);
+    const [endDate, setEndDate] = useState(today);
+    const [settlementResult, setSettlementResult] = useState(null);
+
+    const calculateSettlement = () => {
+        const expensesToSettle = expenses.filter(exp => 
+            !exp.settled && exp.date >= startDate && exp.date <= endDate
+        );
+
+        if (expensesToSettle.length === 0) {
+            setSettlementResult({ message: "対象期間に精算すべき支出はありません。" });
+            return;
+        }
+
+        let paidByUser1 = 0;
+        let paidByUser2 = 0;
+        let owedByUser1 = 0;
+        let owedByUser2 = 0;
+
+        expensesToSettle.forEach(exp => {
+            if (exp.paidBy === user1.id) paidByUser1 += exp.amount;
+            else paidByUser2 += exp.amount;
+
+            owedByUser1 += exp.amount * (exp.split.user1 / 100);
+            owedByUser2 += exp.amount * (exp.split.user2 / 100);
+        });
+        
+        const netTransferUser1ToUser2 = owedByUser1 - paidByUser1; // 正ならUser1がUser2に支払う, 負ならUser2がUser1に支払う
+
+        setSettlementResult({
+            paidByUser1: Math.round(paidByUser1),
+            paidByUser2: Math.round(paidByUser2),
+            owedByUser1: Math.round(owedByUser1),
+            owedByUser2: Math.round(owedByUser2),
+            netTransferUser1ToUser2: Math.round(netTransferUser1ToUser2),
+            count: expensesToSettle.length,
+            expensesToSettleIds: expensesToSettle.map(e => e.id),
+        });
+    };
+
+    const confirmSettlement = () => {
+        if (!settlementResult || !settlementResult.expensesToSettleIds || settlementResult.expensesToSettleIds.length === 0) {
+            alert("精算する支出がありません。"); // 本来はカスタムダイアログ
+            return;
+        }
+        // 本来はカスタム確認ダイアログ
+        if (window.confirm(`期間 ${startDate}～${endDate} の ${settlementResult.count}件の支出を精算しますか？この操作は元に戻せません。`)) {
+            const newSettlement = {
+                id: `settle-${Date.now()}`,
+                date: today,
+                periodStart: startDate,
+                periodEnd: endDate,
+                ...settlementResult,
+            };
+            onAddSettlement(newSettlement);
+            alert("精算を確定しました。");
+            setSettlementResult(null); // 結果をリセット
+            // setCurrentPage('dashboard'); // ダッシュボードなどへ遷移
+        }
+    };
+    
+    const sortedSettlements = useMemo(() => 
+        [...settlements].sort((a,b) => new Date(b.date) - new Date(a.date)), 
+    [settlements]);
+
+    return (
+        <div className="p-4 md:p-6 space-y-8">
+            <h2 className="text-2xl font-semibold">精算</h2>
+            <Card>
+                <CardHeader>
+                    <CardTitle>精算期間の選択</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    <div>
+                        <Label htmlFor="settleStartDate">開始日</Label>
+                        <Input type="date" id="settleStartDate" value={startDate} onChange={e => setStartDate(e.target.value)} />
+                    </div>
+                    <div>
+                        <Label htmlFor="settleEndDate">終了日</Label>
+                        <Input type="date" id="settleEndDate" value={endDate} onChange={e => setEndDate(e.target.value)} />
+                    </div>
+                    <Button onClick={calculateSettlement} className="w-full md:w-auto">精算額を計算</Button>
+                </CardContent>
+            </Card>
+
+            {settlementResult && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>精算結果</CardTitle>
+                        {settlementResult.count && <CardDescription>{settlementResult.count}件の支出が対象です。</CardDescription>}
+                    </CardHeader>
+                    <CardContent>
+                        {settlementResult.message ? (
+                            <p>{settlementResult.message}</p>
+                        ) : (
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-2 gap-4 text-center">
+                                    <div>
+                                        <p className="text-sm text-slate-500">{user1.name}の支払総額</p>
+                                        <p className="text-xl font-semibold">¥{settlementResult.paidByUser1.toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-slate-500">{user2.name}の支払総額</p>
+                                        <p className="text-xl font-semibold">¥{settlementResult.paidByUser2.toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-slate-500">{user1.name}の負担総額</p>
+                                        <p className="text-xl font-semibold">¥{settlementResult.owedByUser1.toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-slate-500">{user2.name}の負担総額</p>
+                                        <p className="text-xl font-semibold">¥{settlementResult.owedByUser2.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                                <div className="pt-4 border-t text-center">
+                                    {settlementResult.netTransferUser1ToUser2 === 0 ? (
+                                        <p className="text-xl font-bold text-green-600">精算不要です</p>
+                                    ) : settlementResult.netTransferUser1ToUser2 > 0 ? (
+                                        <p className="text-xl font-bold">
+                                            {user1.name} が {user2.name} に <span className="text-orange-500">¥{Math.abs(settlementResult.netTransferUser1ToUser2).toLocaleString()}</span> 支払います
+                                        </p>
+                                    ) : (
+                                        <p className="text-xl font-bold">
+                                            {user2.name} が {user1.name} に <span className="text-blue-500">¥{Math.abs(settlementResult.netTransferUser1ToUser2).toLocaleString()}</span> 支払います
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </CardContent>
+                    {settlementResult.expensesToSettleIds && settlementResult.expensesToSettleIds.length > 0 && (
+                        <CardFooter>
+                            <Button onClick={confirmSettlement} size="lg" className="w-full">精算を確定する</Button>
+                        </CardFooter>
+                    )}
+                </Card>
+            )}
+            
+            <Card>
+                <CardHeader><CardTitle>精算履歴</CardTitle></CardHeader>
+                <CardContent>
+                    {sortedSettlements.length === 0 ? (
+                        <p className="text-slate-500">精算履歴はありません。</p>
+                    ) : (
+                        <ul className="space-y-2">
+                            {sortedSettlements.map(s => (
+                                <li key={s.id} className="p-3 border rounded-md">
+                                    <p className="font-medium">精算日: {s.date}</p>
+                                    <p className="text-sm text-slate-600">期間: {s.periodStart} ～ {s.periodEnd} ({s.count}件)</p>
+                                     {s.netTransferUser1ToUser2 === 0 ? (
+                                        <p className="text-sm text-green-600">精算不要</p>
+                                    ) : s.netTransferUser1ToUser2 > 0 ? (
+                                        <p className="text-sm">{user1.name} が {user2.name} に ¥{Math.abs(s.netTransferUser1ToUser2).toLocaleString()} 支払いました</p>
+                                    ) : (
+                                        <p className="text-sm">{user2.name} が {user1.name} に ¥{Math.abs(s.netTransferUser1ToUser2).toLocaleString()} 支払いました</p>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+
+// メインのAppコンポーネント
+const App = () => {
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [expenses, setExpenses] = useState([ // モックデータにsettledフラグを追加
+    { id: 'exp1', date: '2025-05-30', categoryId: 'cat1', amount: 3000, paidBy: 'user1', memo: 'スーパーでの買い物', split: { user1: 50, user2: 50 }, settled: false },
+    { id: 'exp2', date: '2025-05-29', categoryId: 'cat3', amount: 80000, paidBy: 'user2', memo: '今月の家賃', split: { user1: 50, user2: 50 }, settled: false },
+    { id: 'exp3', date: '2025-04-15', categoryId: 'cat5', amount: 5000, paidBy: 'user1', memo: '映画', split: { user1: 30, user2: 70 }, settled: true },
+  ]);
+  const [categories, setCategories] = useState(initialCategories);
+  const [coupleProfile, setCoupleProfile] = useState(mockCoupleProfile);
+  const [budget, setBudget] = useState({ monthlyTotal: 250000, categories: { 'cat1': 50000, 'cat5': 30000 } });
+  const [editingExpense, setEditingExpense] = useState(null); // 編集中の支出データ
+  const [settlements, setSettlements] = useState([ // 精算履歴のモックデータ
+     { id: 'settle-1', date: '2025-05-01', periodStart: '2025-04-01', periodEnd: '2025-04-30', count: 1, paidByUser1: 5000, paidByUser2: 0, owedByUser1: 1500, owedByUser2: 3500, netTransferUser1ToUser2: -3500, expensesToSettleIds: ['exp3'] }
+  ]);
+
+
+  const handleAddExpense = (newExpense) => {
+    setExpenses(prevExpenses => [newExpense, ...prevExpenses]);
+  };
+  
+  const handleUpdateExpense = (updatedExpense) => {
+    setExpenses(prevExpenses => prevExpenses.map(exp => exp.id === updatedExpense.id ? updatedExpense : exp));
+    setEditingExpense(null); //編集状態を解除
+  };
+
+  const handleDeleteExpense = (expenseId) => {
+    setExpenses(prevExpenses => prevExpenses.filter(exp => exp.id !== expenseId));
+  };
+  
+  const handleEditExpense = (expense) => {
+    setEditingExpense(expense);
+    setCurrentPage('expenseInput');
+  };
+
+  const handleUpdateCoupleDefaultSplit = (newSplit) => {
+    setCoupleProfile(prev => ({ ...prev, defaultSplit: newSplit }));
+  };
+
+  const handleUpdateCategoryDefaultSplit = (categoryId, newSplit) => {
+    setCategories(prev => prev.map(cat => 
+      cat.id === categoryId ? { ...cat, defaultSplit: newSplit } : cat
+    ));
+  };
+  
+  const handleAddCategory = (newCategoryData) => {
+    const newCategory = {
+        id: `cat-${Date.now()}`, // 仮ID
+        ...newCategoryData,
+    };
+    setCategories(prev => [...prev, newCategory]);
+  };
+
+  const handleUpdateCategory = (updatedCategoryData) => {
+      setCategories(prev => prev.map(cat => cat.id === updatedCategoryData.id ? updatedCategoryData : cat));
+  };
+  
+  const handleUpdateBudget = (newBudget) => {
+      setBudget(newBudget);
+  };
+
+  const handleAddSettlement = (newSettlement) => {
+    setSettlements(prev => [newSettlement, ...prev]);
+    // 精算対象となった支出の settled フラグを true に更新
+    setExpenses(prevExpenses => 
+        prevExpenses.map(exp => 
+            newSettlement.expensesToSettleIds.includes(exp.id) ? { ...exp, settled: true } : exp
+        )
+    );
+  };
+
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'dashboard':
+        return <DashboardScreen user1={coupleProfile.user1} user2={coupleProfile.user2} expenses={expenses} categories={categories} budget={budget} setCurrentPage={setCurrentPage} onEditExpense={handleEditExpense} settlements={settlements}/>;
+      case 'expenseInput':
+        return <ExpenseInputScreen user1={coupleProfile.user1} user2={coupleProfile.user2} categories={categories} onAddExpense={handleAddExpense} editingExpense={editingExpense} onUpdateExpense={handleUpdateExpense} setCurrentPage={setCurrentPage} />;
+      case 'expenseList':
+        return <ExpenseListScreen expenses={expenses} categories={categories} user1={coupleProfile.user1} user2={coupleProfile.user2} onDeleteExpense={handleDeleteExpense} onEditExpense={handleEditExpense} setCurrentPage={setCurrentPage} />;
+      case 'splitSettings':
+        return <SplitRatioSettingsScreen 
+                  user1={coupleProfile.user1} 
+                  user2={coupleProfile.user2} 
+                  coupleProfile={coupleProfile} 
+                  categories={categories}
+                  onUpdateCoupleDefaultSplit={handleUpdateCoupleDefaultSplit}
+                  onUpdateCategoryDefaultSplit={handleUpdateCategoryDefaultSplit}
+                />;
+      case 'categoryManagement':
+        return <CategoryManagementScreen categories={categories} onAddCategory={handleAddCategory} onUpdateCategory={handleUpdateCategory} user1={coupleProfile.user1} user2={coupleProfile.user2} coupleProfile={coupleProfile} />;
+      case 'budget':
+        return <BudgetScreen budget={budget} onUpdateBudget={handleUpdateBudget} categories={categories} user1={coupleProfile.user1} user2={coupleProfile.user2} />;
+      case 'settlement':
+        return <SettlementScreen expenses={expenses} user1={coupleProfile.user1} user2={coupleProfile.user2} settlements={settlements} onAddSettlement={handleAddSettlement} setCurrentPage={setCurrentPage} />;
+      default:
+        return <DashboardScreen user1={coupleProfile.user1} user2={coupleProfile.user2} expenses={expenses} categories={categories} budget={budget} setCurrentPage={setCurrentPage} onEditExpense={handleEditExpense} settlements={settlements}/>;
+    }
+  };
+
+  const navItems = [
+    { id: 'dashboard', label: 'ダッシュボード', icon: HomeIcon, action: () => { setEditingExpense(null); setCurrentPage('dashboard');} },
+    { id: 'expenseInput', label: '支出入力', icon: PlusCircleIcon, action: () => { setEditingExpense(null); setCurrentPage('expenseInput');} },
+    { id: 'expenseList', label: '支出一覧', icon: ListIcon, action: () => { setEditingExpense(null); setCurrentPage('expenseList');} },
+    { id: 'settlement', label: '精算', icon: CheckCircleIcon, action: () => { setEditingExpense(null); setCurrentPage('settlement');} },
+    // { id: 'reports', label: 'レポート', icon: PieChartIcon, action: () => alert('レポート画面へ（未実装）') },
+    { id: 'budget', label: '予算管理', icon: DollarSignIcon, action: () => { setEditingExpense(null); setCurrentPage('budget');} },
+    { id: 'categoryManagement', label: 'カテゴリ設定', icon: TagIcon, action: () => { setEditingExpense(null); setCurrentPage('categoryManagement');} },
+    { id: 'splitSettings', label: '分担比率設定', icon: UsersIcon, action: () => { setEditingExpense(null); setCurrentPage('splitSettings');} },
+    // { id: 'settings', label: 'その他設定', icon: SettingsIcon, action: () => alert('その他設定へ（未実装）') },
+  ];
+
+  return (
+    <div className="flex flex-col md:flex-row min-h-screen bg-slate-100 font-sans">
+      <header className="bg-white shadow-md md:hidden sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 className="text-xl font-bold text-slate-800">{mockCoupleProfile.coupleName}</h1>
+            {/* モバイル用メニューボタン (ハンバーガー等) */}
+        </div>
+      </header>
+      
+      <nav className="hidden md:flex md:flex-col md:w-64 bg-white border-r border-slate-200 p-4 space-y-1.5 sticky top-0 h-screen overflow-y-auto">
+        <div className="px-2 mb-4">
+            <h1 className="text-2xl font-bold text-slate-800">{mockCoupleProfile.coupleName}</h1>
+            <p className="text-sm text-slate-500">ようこそ、{coupleProfile.user1.name}さん</p>
+        </div>
+        {navItems.map(item => (
+          <Button
+            key={item.id}
+            variant={currentPage === item.id ? 'secondary' : 'ghost'}
+            className="w-full justify-start !text-base px-3 py-2.5" // text-smからtext-baseへ
+            onClick={item.action}
+          >
+            <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
+            {item.label}
+          </Button>
+        ))}
+        <div className="mt-auto pt-4 border-t border-slate-200">
+             <Button variant="ghost" className="w-full justify-start !text-base px-3 py-2.5" onClick={() => alert('ログアウトしました（仮）')}>
+                <LogOutIcon className="mr-3 h-5 w-5" />
+                ログアウト
+            </Button>
+        </div>
+      </nav>
+
+      <main className="flex-1 overflow-y-auto">
+        {renderPage()}
+      </main>
+
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-top p-1.5 flex justify-around z-10">
+        {navItems.slice(0, 4).map(item => ( 
+          <Button
+            key={item.id + "-mobile"}
+            variant="ghost"
+            className={`flex flex-col items-center h-auto p-1.5 rounded-lg ${currentPage === item.id ? 'text-blue-600 bg-blue-50' : 'text-slate-600'}`}
+            onClick={item.action}
+          >
+            <item.icon className="h-6 w-6 mb-0.5" />
+            <span className="text-xs leading-tight">{item.label}</span>
+          </Button>
+        ))}
+         <Button
+            variant="ghost"
+            className={`flex flex-col items-center h-auto p-1.5 rounded-lg text-slate-600`}
+            onClick={() => alert('その他メニュー（未実装）\n・レポート\n・その他設定 など')}
+          >
+            <ChevronDownIcon className="h-6 w-6 mb-0.5" />
+            <span className="text-xs leading-tight">その他</span>
+          </Button>
+      </nav>
+      <div className="md:hidden pb-20"></div> {/* ボトムナビゲーションのスペース確保 */}
+    </div>
+  );
+};
+
+export default App;
+
