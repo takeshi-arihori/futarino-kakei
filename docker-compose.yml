@@ -7,7 +7,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=user
+      - POSTGRES_USER=usern
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=futarino_kakei_db
     restart: always
