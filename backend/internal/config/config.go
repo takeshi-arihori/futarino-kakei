@@ -40,8 +40,8 @@ func LoadConfig() (*Config, error) {
 	}
 
 	// config.yaml を読み込む (上書きされる)
-	viper.SetConfigName("config") // config.yaml を再度指定
-	viper.SetConfigType("yaml")   // yaml タイプに戻す
+	viper.SetConfigName("config")                 // config.yaml を再度指定
+	viper.SetConfigType("yaml")                   // yaml タイプに戻す
 	if err := viper.MergeInConfig(); err != nil { // MergeInConfig を使用して既存の設定にマージ
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// config.yaml が見つからない場合はエラーとしない
