@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS settlement_expenses;
+DROP TABLE IF EXISTS settlements;
+DROP TABLE IF EXISTS budgets;
+DROP TABLE IF EXISTS expenses;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS couples;

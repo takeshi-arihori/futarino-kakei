@@ -1,6 +1,6 @@
 database:
   host: localhost
-  port: 3306
-  user: root
+  port: 5432
+  user: usern
   password: password
-  dbname: futarino_kakei
+  dbname: futarino_kakei_db

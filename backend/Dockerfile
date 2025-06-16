@@ -1,7 +1,7 @@
 # --- Build Stage ---
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
-WORKDIR /build
+WORKDIR /app
 
 # Copy Go modules and download dependencies
 COPY go.mod go.sum ./
@@ -20,6 +20,9 @@ WORKDIR /app
 
 # Copy the built binary from the builder stage
 COPY --from=builder /app/server .
+COPY --from=builder /app/migrations ./backend/migrations
+RUN chmod +x ./server
+RUN ls -l /app
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
