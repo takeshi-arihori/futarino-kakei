@@ -1,18 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+
+	"futarino-kakei/backend/internal/config"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "API server is running")
+	if _, err := config.LoadConfig(); err != nil {
+		log.Fatalf("failed to load config: %v", err)
+	}
+
+
+	router := gin.Default()
+
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
 	log.Println("Starting server on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("could not start server: %v", err)
 	}
 }
