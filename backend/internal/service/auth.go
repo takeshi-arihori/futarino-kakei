@@ -16,11 +16,11 @@ var (
 )
 
 type AuthService struct {
-	userRepo repository.UserRepository
+	userRepo *repository.UserPostgresRepository
 	jwtKey   []byte
 }
 
-func NewAuthService(userRepo repository.UserRepository, jwtKey []byte) *AuthService {
+func NewAuthService(userRepo *repository.UserPostgresRepository, jwtKey []byte) *AuthService {
 	return &AuthService{
 		userRepo: userRepo,
 		jwtKey:   jwtKey,
@@ -28,84 +28,41 @@ func NewAuthService(userRepo repository.UserRepository, jwtKey []byte) *AuthServ
 }
 
 // Register 新規ユーザーを登録する
-func (s *AuthService) Register(req *model.RegisterRequest) (*model.AuthResponse, error) {
-	// メールアドレスの重複チェック
-	exists, err := s.userRepo.ExistsByEmail(req.Email)
+func (s *AuthService) Register(user *model.User) error {
+	exists, err := s.userRepo.ExistsByEmail(user.Email)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if exists {
-		return nil, ErrUserExists
+		return errors.New("email already exists")
 	}
 
-	// パスワードのハッシュ化
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.PasswordHash), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	user.PasswordHash = string(hashedPassword)
 
-	// ユーザーの作成
-	user := &model.User{
-		Email:    req.Email,
-		Password: string(hashedPassword),
-		Name:     req.Name,
-	}
-
-	if err := s.userRepo.Create(user); err != nil {
-		return nil, err
-	}
-
-	// JWTトークンの生成
-	token, err := s.generateToken(user)
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.AuthResponse{
-		Token: token,
-		User:  *user,
-	}, nil
+	return s.userRepo.Create(user)
 }
 
 // Login ユーザーログインを処理する
-func (s *AuthService) Login(req *model.LoginRequest) (*model.AuthResponse, error) {
-	// ユーザーの取得
-	user, err := s.userRepo.FindByEmail(req.Email)
+func (s *AuthService) Login(email, password string) (string, error) {
+	user, err := s.userRepo.FindByEmail(email)
 	if err != nil {
-		return nil, ErrInvalidCredentials
+		return "", errors.New("invalid credentials")
 	}
 
-	// パスワードの検証
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		return nil, ErrInvalidCredentials
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
+		return "", errors.New("invalid credentials")
 	}
 
-	// JWTトークンの生成
-	token, err := s.generateToken(user)
-	if err != nil {
-		return nil, err
-	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": user.ID,
+		"email":   user.Email,
+		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+	})
 
-	return &model.AuthResponse{
-		Token: token,
-		User:  *user,
-	}, nil
-}
-
-// generateToken JWTトークンを生成する
-func (s *AuthService) generateToken(user *model.User) (string, error) {
-	now := time.Now()
-	claims := &model.Claims{
-		UserID: user.ID,
-		Email:  user.Email,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(now.Add(24 * time.Hour)),
-			IssuedAt:  jwt.NewNumericDate(now),
-			NotBefore: jwt.NewNumericDate(now),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(s.jwtKey)
 	if err != nil {
 		return "", err
@@ -115,10 +72,11 @@ func (s *AuthService) generateToken(user *model.User) (string, error) {
 }
 
 // ValidateToken トークンを検証する
-func (s *AuthService) ValidateToken(tokenString string) (*model.Claims, error) {
-	claims := &model.Claims{}
-
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+func (s *AuthService) ValidateToken(tokenString string) (*model.User, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
 		return s.jwtKey, nil
 	})
 
@@ -126,9 +84,19 @@ func (s *AuthService) ValidateToken(tokenString string) (*model.Claims, error) {
 		return nil, err
 	}
 
-	if !token.Valid {
-		return nil, errors.New("invalid token")
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		email, ok := claims["email"].(string)
+		if !ok {
+			return nil, errors.New("invalid token claims")
+		}
+
+		user, err := s.userRepo.FindByEmail(email)
+		if err != nil {
+			return nil, err
+		}
+
+		return user, nil
 	}
 
-	return claims, nil
+	return nil, errors.New("invalid token")
 }

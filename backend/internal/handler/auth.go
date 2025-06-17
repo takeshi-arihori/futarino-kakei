@@ -27,17 +27,22 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.authService.Register(&req)
-	if err == service.ErrUserExists {
-		c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
-		return
+	user := &model.User{
+		Email:        req.Email,
+		Name:         req.Name,
+		PasswordHash: req.Password, // サービス層でハッシュ化される
 	}
-	if err != nil {
+
+	if err := h.authService.Register(user); err != nil {
+		if err.Error() == "email already exists" {
+			c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to register user"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, resp)
+	c.JSON(http.StatusCreated, user)
 }
 
 // Login ログインハンドラー
@@ -48,17 +53,19 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.authService.Login(&req)
-	if err == service.ErrInvalidCredentials {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
-		return
-	}
+	token, err := h.authService.Login(req.Email, req.Password)
 	if err != nil {
+		if err.Error() == "invalid credentials" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to login"})
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
 }
 
 // AuthMiddleware 認証ミドルウェア
@@ -76,16 +83,14 @@ func (h *AuthHandler) AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		claims, err := h.authService.ValidateToken(tokenParts[1])
+		user, err := h.authService.ValidateToken(tokenParts[1])
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 			return
 		}
 
-		// ユーザー情報をコンテキストに設定
-		c.Set("user_id", claims.UserID)
-		c.Set("email", claims.Email)
-
+		c.Set("user_id", user.ID)
+		c.Set("email", user.Email)
 		c.Next()
 	}
 }

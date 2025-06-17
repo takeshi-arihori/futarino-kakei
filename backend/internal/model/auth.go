@@ -1,6 +1,10 @@
 package model
 
-import "github.com/golang-jwt/jwt/v5"
+import (
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+)
 
 // RegisterRequest ユーザー登録リクエストの構造体
 type RegisterRequest struct {
@@ -15,6 +19,12 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// LoginResponse ログインレスポンスの構造体
+type LoginResponse struct {
+	Token string `json:"token"`
+	User  User   `json:"user"`
+}
+
 // AuthResponse 認証レスポンスの構造体
 type AuthResponse struct {
 	Token string `json:"token"`
@@ -23,10 +33,12 @@ type AuthResponse struct {
 
 // User ユーザー情報の構造体
 type User struct {
-	ID       int64  `json:"id"`
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Password string `json:"-"` // レスポンスには含めない
+	ID           int64     `json:"id"`
+	Email        string    `json:"email"`
+	Name         string    `json:"name"`
+	PasswordHash string    `json:"-"` // レスポンスには含めない
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // Claims JWTクレームの構造体
