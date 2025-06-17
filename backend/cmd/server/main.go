@@ -39,7 +39,7 @@ func main() {
 		jwtKey = []byte("your-secret-key")
 	}
 
-	userRepo := repository.NewUserRepository(db)
+	userRepo := repository.NewUserPostgresRepository(db)
 	authService := service.NewAuthService(userRepo, jwtKey)
 	authHandler := handler.NewAuthHandler(authService)
 

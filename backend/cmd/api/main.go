@@ -40,7 +40,7 @@ func main() {
 	defer db.Close()
 
 	// リポジトリの初期化
-	var userRepo repository.UserRepository = repository.NewUserPostgresRepository(db)
+	userRepo := repository.NewUserPostgresRepository(db)
 
 	// JWT秘密鍵の設定
 	jwtKey := []byte(os.Getenv("JWT_SECRET"))
