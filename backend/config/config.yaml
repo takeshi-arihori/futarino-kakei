@@ -1,0 +1,4 @@
+database:
+  user: root
+  password: password
+  dbname: futarino_kakei_db 
