@@ -27,7 +27,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.authService.Register(&req)
+	user, err := h.authService.Register(&req)
 	if err == service.ErrUserExists {
 		c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
 		return
@@ -37,7 +37,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, resp)
+	c.JSON(http.StatusCreated, user)
 }
 
 // Login ログインハンドラー
@@ -82,10 +82,8 @@ func (h *AuthHandler) AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// ユーザー情報をコンテキストに設定
-		c.Set("user_id", claims.UserID)
-		c.Set("email", claims.Email)
-
+		c.Set("user_id", (*claims)["user_id"])
+		c.Set("email", (*claims)["email"])
 		c.Next()
 	}
 }
