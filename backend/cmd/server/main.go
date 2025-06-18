@@ -39,9 +39,17 @@ func main() {
 		jwtKey = []byte("your-secret-key")
 	}
 
+	// リポジトリの初期化
 	userRepo := repository.NewUserPostgresRepository(db)
+	expenseRepo := repository.NewExpensePostgresRepository(db)
+
+	// サービスの初期化
 	authService := service.NewAuthService(userRepo, jwtKey)
+	expenseService := service.NewExpenseService(expenseRepo)
+
+	// ハンドラーの初期化
 	authHandler := handler.NewAuthHandler(authService)
+	expenseHandler := handler.NewExpenseHandler(expenseService)
 
 	r := gin.Default()
 
@@ -55,6 +63,18 @@ func main() {
 	// Auth routes
 	r.POST("/api/register", authHandler.Register)
 	r.POST("/api/login", authHandler.Login)
+
+	// 認証が必要なルートグループ
+	authorized := r.Group("/api")
+	authorized.Use(authHandler.AuthMiddleware())
+	{
+		// 支出のルート
+		authorized.POST("/expenses", expenseHandler.CreateExpense)
+		authorized.GET("/expenses", expenseHandler.GetUserExpenses)
+		authorized.GET("/expenses/:id", expenseHandler.GetExpense)
+		authorized.PUT("/expenses/:id", expenseHandler.UpdateExpense)
+		authorized.DELETE("/expenses/:id", expenseHandler.DeleteExpense)
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
