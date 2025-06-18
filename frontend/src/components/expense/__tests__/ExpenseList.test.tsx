@@ -12,6 +12,8 @@ const mockExpenses: Expense[] = [
         category: '食費',
         payer: 'user1',
         isSettled: false,
+        createdAt: '2023-12-01T10:00:00Z',
+        updatedAt: '2023-12-01T10:00:00Z',
     },
     {
         id: '2',
@@ -21,6 +23,8 @@ const mockExpenses: Expense[] = [
         category: '交通費',
         payer: 'user2',
         isSettled: true,
+        createdAt: '2023-12-02T09:00:00Z',
+        updatedAt: '2023-12-02T09:00:00Z',
     },
 ];
 
