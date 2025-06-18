@@ -42,14 +42,17 @@ func main() {
 	// リポジトリの初期化
 	userRepo := repository.NewUserPostgresRepository(db)
 	expenseRepo := repository.NewExpensePostgresRepository(db)
+	settlementRepo := repository.NewSettlementPostgres(db)
 
 	// サービスの初期化
 	authService := service.NewAuthService(userRepo, jwtKey)
 	expenseService := service.NewExpenseService(expenseRepo)
+	settlementService := service.NewSettlementService(settlementRepo)
 
 	// ハンドラーの初期化
 	authHandler := handler.NewAuthHandler(authService)
 	expenseHandler := handler.NewExpenseHandler(expenseService)
+	settlementHandler := handler.NewSettlementHandler(settlementService)
 
 	r := gin.Default()
 
@@ -74,6 +77,9 @@ func main() {
 		authorized.GET("/expenses/:id", expenseHandler.GetExpense)
 		authorized.PUT("/expenses/:id", expenseHandler.UpdateExpense)
 		authorized.DELETE("/expenses/:id", expenseHandler.DeleteExpense)
+
+		// 精算のルート
+		settlementHandler.RegisterRoutes(authorized)
 	}
 
 	port := os.Getenv("PORT")

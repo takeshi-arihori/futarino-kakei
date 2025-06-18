@@ -69,124 +69,117 @@ export function SettlementCalculator() {
     };
 
     return (
-        <div className=\"space-y-6\">
-            < Card >
-        <CardHeader>
-          <CardTitle>精算計算</CardTitle>
-          <CardDescription>
-            指定期間の支出を集計して精算額を計算します
-          </CardDescription>
-        </CardHeader>
-        <CardContent className=\"space-y-4\">
-    {
-        error && (
-            <Alert variant=\"destructive\">
-                < AlertDescription > { error }</AlertDescription >
-                    <Button variant=\"outline\" size=\"sm\" onClick={clearError}>
-        エラーを閉じる
-              </Button >
-            </Alert >
-          )
-    }
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>精算計算</CardTitle>
+                    <CardDescription>
+                        指定期間の支出を集計して精算額を計算します
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {error && (
+                        <Alert variant="destructive">
+                            <AlertDescription>{error}</AlertDescription>
+                            <Button variant="outline" size="sm" onClick={clearError}>
+                                エラーを閉じる
+                            </Button>
+                        </Alert>
+                    )}
 
-    <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">
-        < div className =\"space-y-2\">
-            < Label htmlFor =\"period-start\">期間開始日</Label>
-                < Input
-    id =\"period-start\"
-    type =\"date\"
-    value = { periodStart }
-    onChange = {(e) => setPeriodStart(e.target.value)
-}
-disabled = { isLoading }
-    />
-            </div >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="period-start">期間開始日</Label>
+                            <Input
+                                id="period-start"
+                                type="date"
+                                value={periodStart}
+                                onChange={(e) => setPeriodStart(e.target.value)}
+                                disabled={isLoading}
+                            />
+                        </div>
 
-    <div className=\"space-y-2\">
-        < Label htmlFor =\"period-end\">期間終了日</Label>
-            < Input
-id =\"period-end\"
-type =\"date\"
-value = { periodEnd }
-onChange = {(e) => setPeriodEnd(e.target.value)}
-disabled = { isLoading }
-    />
-            </div >
-          </div >
+                        <div className="space-y-2">
+                            <Label htmlFor="period-end">期間終了日</Label>
+                            <Input
+                                id="period-end"
+                                type="date"
+                                value={periodEnd}
+                                onChange={(e) => setPeriodEnd(e.target.value)}
+                                disabled={isLoading}
+                            />
+                        </div>
+                    </div>
 
-    <Button
-        onClick={handleCalculate}
-        disabled={!periodStart || !periodEnd || isLoading}
-        className=\"w-full\"
-            >
-        {
-            isLoading?<Spinner size =\"sm\" /> : '精算額を計算'}
-          </Button>
-        </CardContent >
-      </Card >
+                    <Button
+                        onClick={handleCalculate}
+                        disabled={!periodStart || !periodEnd || isLoading}
+                        className="w-full"
+                    >
+                        {isLoading ? <Spinner size="sm" /> : '精算額を計算'}
+                    </Button>
+                </CardContent>
+            </Card>
 
-    { calculationResult && (
-        <Card>
-          <CardHeader>
-            <CardTitle>精算結果</CardTitle>
-            <CardDescription>
-              {formatDate(calculationResult.period_start)} 〜 {formatDate(calculationResult.period_end)}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className=\"space-y-6\">
-            {/* 精算サマリー */}
-            <div className=\"bg-slate-50 p-4 rounded-lg space-y-2\">
-              <h4 className=\"font-semibold text-lg\">精算額</h4>
-              <p className=\"text-2xl font-bold text-blue-600\">
-{ getWhoShouldPayText(calculationResult.who_pays_whom, calculationResult.settlement_amount) }
-              </p >
-            </div >
+            {calculationResult && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>精算結果</CardTitle>
+                        <CardDescription>
+                            {formatDate(calculationResult.period_start)} 〜 {formatDate(calculationResult.period_end)}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        {/* 精算サマリー */}
+                        <div className="bg-slate-50 p-4 rounded-lg space-y-2">
+                            <h4 className="font-semibold text-lg">精算額</h4>
+                            <p className="text-2xl font-bold text-blue-600">
+                                {getWhoShouldPayText(calculationResult.who_pays_whom, calculationResult.settlement_amount)}
+                            </p>
+                        </div>
 
-    {/* 詳細情報 */ }
-    < div className =\"grid grid-cols-1 md:grid-cols-2 gap-4\">
-        < div className =\"space-y-2\">
-            < h5 className =\"font-medium\">ユーザー1</h5>
-                < p > 支払い合計: { formatCurrency(calculationResult.user1_paid_total) }</p >
-                    <p>負担予定額: {formatCurrency(calculationResult.user1_should_pay)}</p>
-              </div >
+                        {/* 詳細情報 */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <h5 className="font-medium">ユーザー1</h5>
+                                <p>支払い合計: {formatCurrency(calculationResult.user1_paid_total)}</p>
+                                <p>負担予定額: {formatCurrency(calculationResult.user1_should_pay)}</p>
+                            </div>
 
-    <div className=\"space-y-2\">
-        < h5 className =\"font-medium\">ユーザー2</h5>
-            < p > 支払い合計: { formatCurrency(calculationResult.user2_paid_total) }</p >
-                <p>負担予定額: {formatCurrency(calculationResult.user2_should_pay)}</p>
-              </div >
-            </div >
+                            <div className="space-y-2">
+                                <h5 className="font-medium">ユーザー2</h5>
+                                <p>支払い合計: {formatCurrency(calculationResult.user2_paid_total)}</p>
+                                <p>負担予定額: {formatCurrency(calculationResult.user2_should_pay)}</p>
+                            </div>
+                        </div>
 
-    {/* 対象支出一覧 */ }
-    < div className =\"space-y-2\">
-        < h5 className =\"font-medium\">対象支出 ({calculationResult.expenses.length}件)</h5>
-            < div className =\"max-h-60 overflow-y-auto space-y-2\">
-{
-    calculationResult.expenses.map((expense) => (
-        <div key={expense.id} className=\"flex justify-between items-center p-2 border rounded\">
-        < div >
-    <p className=\"font-medium\">{expense.memo || '支出'}</p>
-    < p className =\"text-sm text-gray-600\">{formatDate(expense.date)}</p>
-                    </div >
-        <p className=\"font-semibold\">{formatCurrency(expense.amount)}</p>
-                  </div >
-                ))
-}
-              </div >
-            </div >
+                        {/* 対象支出一覧 */}
+                        <div className="space-y-2">
+                            <h5 className="font-medium">対象支出 ({calculationResult.expenses.length}件)</h5>
+                            <div className="max-h-60 overflow-y-auto space-y-2">
+                                {calculationResult.expenses.map((expense) => (
+                                    <div key={expense.id} className="flex justify-between items-center p-2 border rounded">
+                                        <div>
+                                            <p className="font-medium">{expense.memo || '支出'}</p>
+                                            <p className="text-sm text-gray-600">{formatDate(expense.date)}</p>
+                                        </div>
+                                        <p className="font-semibold">{formatCurrency(expense.amount)}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
 
-    <Button
-        onClick={handleConfirm}
-        disabled={isLoading}
-        className=\"w-full\"
-variant =\"default\"
-    >
-{
-    isLoading?<Spinner size =\"sm\" /> : '精算を確定する'}
-            </Button>
-          </CardContent >
-        </Card >
-      )}
-    </div >
-  );
+                        <Button
+                            onClick={handleConfirm}
+                            disabled={isLoading}
+                            className="w-full"
+                            variant="default"
+                        >
+                            {isLoading ? <Spinner size="sm" /> : '精算を確定する'}
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+    );
 } 
