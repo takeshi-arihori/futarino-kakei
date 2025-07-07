@@ -1,291 +1,303 @@
 # カップル・夫婦専用家計アプリ「ふたりの家計」
 
-## プロダクト概要
-カップル・夫婦が共同で家計管理を行うためのWebアプリケーション
+## 概要
+カップル・夫婦が共同で家計管理を行うためのWebアプリケーションです。日々の支出の記録から、面倒な精算までをスマートに解決することを目指します。
 
-### 技術スタック
-- **フロントエンド**: Next.js 14+ (App Router)
-  - TypeScript
-  - Material-UI (MUI)
-  - Zustand (状態管理)
-  - React Hook Form
-- **バックエンド**: Laravel 11+
-  - PHP 8.2+
-  - MySQL 8.0+
-  - Laravel Sanctum (認証)
-- **開発環境**: Docker Compose
-- **デプロイ**: Vercel (フロントエンド), AWS/VPS (バックエンド)
+## 技術スタック
+- **フロントエンド**: Next.js 15+ (App Router), TypeScript, Tailwind CSS
+- **認証**: NextAuth.js v5 (Auth.js)
+- **データベース**: Supabase (PostgreSQL, Realtime)
+- **デプロイ**: Vercel
+- **開発環境**: Node.js 20+
 
-### 開発環境セットアップ
+## 主要機能
+- **認証システム**: NextAuth.js v5による安全なユーザー認証（OAuth、Magic Link対応）
+- **支出管理**: 支出の登録・編集・削除、カテゴリ分類
+- **精算機能**: 自動的な支出分担計算と精算履歴
+- **リアルタイム同期**: Supabase Realtimeによるパートナー間でのデータ同期
+- **レスポンシブデザイン**: モバイル・デスクトップ対応
 
-#### 前提条件
-- Docker Desktop
-- Git
+## 開発環境セットアップ
 
-#### Docker環境での起動（推奨）
-```bash
-# リポジトリをクローン
-git clone https://github.com/takeshi-arihori/futarino-kakei.git
-cd futarino-kakei
+### 前提条件
+- Node.js 20以上
+- npm または yarn
+- Supabaseアカウント
+- Vercelアカウント（デプロイ用）
 
-# Docker Composeで全サービスを起動
-docker compose up -d
+### セットアップ手順
 
-# アプリケーションにアクセス
-# フロントエンド: http://localhost:3000
-# バックエンドAPI: http://localhost:8000/api
-# Nginx (リバースプロキシ): http://localhost
-# MySQL: localhost:3307
+1. **リポジトリのクローン**
+   ```bash
+   git clone https://github.com/takeshi-arihori/futarino-kakei.git
+   cd futarino-kakei
+   ```
+
+2. **依存関係のインストール**
+   ```bash
+   npm install
+   ```
+
+3. **環境変数の設定**
+   ```bash
+   cp .env.local.example .env.local
+   ```
+   
+   `.env.local`に以下の値を設定：
+   ```env
+   # NextAuth設定
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your_nextauth_secret
+   
+   # Supabase設定
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   
+   # OAuth Provider設定（例：Google）
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   
+   # GitHub OAuth（オプション）
+   GITHUB_CLIENT_ID=your_github_client_id
+   GITHUB_CLIENT_SECRET=your_github_client_secret
+   ```
+
+4. **開発サーバーの起動**
+   ```bash
+   npm run dev
+   ```
+
+5. **アプリケーションへのアクセス**
+   http://localhost:3000 でアプリケーションにアクセスできます。
+
+## Supabaseセットアップ
+
+### データベーススキーマ
+
+```sql
+-- NextAuthユーザー情報（NextAuth用カスタムテーブル）
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  name TEXT,
+  email TEXT UNIQUE,
+  email_verified TIMESTAMP WITH TIME ZONE,
+  image TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- NextAuth用アカウントテーブル
+CREATE TABLE accounts (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  provider_account_id TEXT NOT NULL,
+  refresh_token TEXT,
+  access_token TEXT,
+  expires_at BIGINT,
+  token_type TEXT,
+  scope TEXT,
+  id_token TEXT,
+  session_state TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(provider, provider_account_id)
+);
+
+-- NextAuth用セッションテーブル
+CREATE TABLE sessions (
+  id TEXT PRIMARY KEY,
+  session_token TEXT UNIQUE NOT NULL,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires TIMESTAMP WITH TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- カップル関係
+CREATE TABLE couples (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user1_id TEXT REFERENCES users(id),
+  user2_id TEXT REFERENCES users(id),
+  name TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 支出記録
+CREATE TABLE expenses (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  couple_id UUID REFERENCES couples(id),
+  user_id TEXT REFERENCES users(id),
+  amount DECIMAL(10,2) NOT NULL,
+  description TEXT,
+  category TEXT,
+  date DATE NOT NULL,
+  is_settled BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 精算記録
+CREATE TABLE settlements (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  couple_id UUID REFERENCES couples(id),
+  from_user_id TEXT REFERENCES users(id),
+  to_user_id TEXT REFERENCES users(id),
+  amount DECIMAL(10,2) NOT NULL,
+  period_start DATE,
+  period_end DATE,
+  status TEXT DEFAULT 'pending',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- インデックス作成
+CREATE INDEX users_email_idx ON users(email);
+CREATE INDEX accounts_user_id_idx ON accounts(user_id);
+CREATE INDEX sessions_user_id_idx ON sessions(user_id);
+CREATE INDEX sessions_session_token_idx ON sessions(session_token);
 ```
 
-#### 個別環境での起動
-##### フロントエンド (Next.js)
-```bash
-cd front-end
-npm install
-npm run dev
+### Row Level Security (RLS) 設定
+
+```sql
+-- Users
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own data" ON users FOR SELECT USING (id = current_setting('request.jwt.claims', true)::json->>'sub');
+CREATE POLICY "Users can update own data" ON users FOR UPDATE USING (id = current_setting('request.jwt.claims', true)::json->>'sub');
+
+-- Couples
+ALTER TABLE couples ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own couple data" ON couples FOR SELECT USING (
+  user1_id = current_setting('request.jwt.claims', true)::json->>'sub' OR 
+  user2_id = current_setting('request.jwt.claims', true)::json->>'sub'
+);
+
+-- Expenses
+ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view couple expenses" ON expenses FOR SELECT USING (
+  couple_id IN (
+    SELECT id FROM couples 
+    WHERE user1_id = current_setting('request.jwt.claims', true)::json->>'sub' 
+       OR user2_id = current_setting('request.jwt.claims', true)::json->>'sub'
+  )
+);
 ```
 
-##### バックエンド (Laravel)
-```bash
-cd back-end
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-php artisan serve
-```
+## プロジェクト構造
 
-### 実装済み機能
-
-#### ✅ 認証システム
-- ユーザー登録・ログイン
-- JWT認証
-- 認証状態の永続化とキャッシュ（5分間）
-- パフォーマンス最適化済み
-
-#### ✅ 基本画面構成
-- ダッシュボード
-- ログイン・登録画面
-- レスポンシブデザイン
-
-#### ✅ 開発環境
-- Docker Compose統合環境
-- フロントエンド・バックエンド・DB・Nginxの連携
-- CORS設定済み
-
-### API仕様
-
-#### 認証エンドポイント
-- `POST /api/register` - ユーザー登録
-- `POST /api/login` - ログイン
-- `POST /api/logout` - ログアウト
-- `GET /api/user` - 認証ユーザー情報取得
-
-#### 支出管理エンドポイント（実装予定）
-- `GET /api/expenses` - 支出一覧取得
-- `POST /api/expenses` - 支出登録
-- `PUT /api/expenses/{id}` - 支出更新
-- `DELETE /api/expenses/{id}` - 支出削除
-
-### データベース設計
-
-#### 実装済みテーブル
-- `users` - ユーザー情報
-- `couples` - カップル関係管理
-- `expenses` - 支出記録
-- `personal_access_tokens` - 認証トークン
-
-### プロジェクト構造
 ```
 futarino-kakei/
-├── front-end/         # Next.js アプリケーション
-│   ├── src/
-│   │   ├── app/       # App Router
-│   │   ├── components/
-│   │   ├── lib/
-│   │   ├── store/     # Zustand状態管理
-│   │   └── types/
-│   ├── public/
-│   ├── Dockerfile
-│   └── package.json
-├── back-end/          # Laravel API
-│   ├── app/
-│   │   ├── Http/Controllers/Api/
-│   │   └── Models/
-│   ├── database/
-│   │   ├── migrations/
-│   │   └── seeders/
-│   ├── routes/
-│   ├── nginx.conf     # Nginx設定
-│   ├── Dockerfile
-│   └── composer.json
-├── docker-compose.yml # Docker環境設定
-├── README-Docker.md   # Docker詳細ガイド
-└── README.md         # このファイル
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # 認証関連ページ
+│   │   ├── login/
+│   │   └── register/
+│   ├── dashboard/         # ダッシュボード
+│   ├── expenses/          # 支出管理
+│   ├── settlements/       # 精算管理
+│   └── settings/          # 設定
+├── components/            # Reactコンポーネント
+│   ├── ui/               # 基本UIコンポーネント
+│   ├── auth/             # 認証関連
+│   ├── expense/          # 支出関連
+│   └── settlement/       # 精算関連
+├── lib/                  # ユーティリティ
+│   ├── auth.ts           # NextAuth設定
+│   ├── supabase.ts       # Supabaseクライアント
+│   └── utils.ts          # 汎用ユーティリティ
+├── hooks/                # カスタムHooks
+├── types/                # TypeScript型定義
+└── public/               # 静的ファイル
 ```
 
-### 機能要件
+## 開発ワークフロー
 
-#### 1. ユーザー管理機能
-- **ユーザー登録**: 最大2名まで登録可能
-- **ログイン機能**: 認証システム
-- **ユーザー識別**: 個人別の支出記録管理
-
-#### 2. 支出管理機能
-##### 2.1 支出記録
-- **支出入力**: 金額、日付、カテゴリ、メモ
-- **記録者識別**: どちらのユーザーが支出したかを記録
-- **編集・削除**: 精算前の支出は修正可能
-
-##### 2.2 カテゴリ管理
-- **既定カテゴリ**: システム標準のカテゴリを用意
-  - 食費、光熱費、家賃、交通費、娯楽費、日用品、医療費、その他など
-- **カスタムカテゴリ**: ユーザーが独自カテゴリを追加可能
-
-#### 3. 共有・分担機能
-##### 3.1 表示モード
-- **個別管理ページ**: 各ユーザーの個人支出表示
-- **共通管理ページ**: 二人の支出を統合表示
-
-##### 3.2 分担比率設定
-- **比率設定**: 支出の分担比率を設定可能（例：50:50、60:40など）
-- **カテゴリ別設定**: カテゴリごとに異なる分担比率設定可能
-
-##### 3.3 精算機能
-- **精算計算**: 設定した分担比率に基づき支払額を計算
-- **支払金額表示**: 片方がもう片方へ支払う金額を表示
-- **精算確定**: 精算後は原則として修正不可
-- **精算履歴**: 過去の精算記録を保持・表示
-
-#### 4. 分析・レポート機能
-##### 4.1 期間別レポート
-- **月次レポート**: 月別の支出状況
-- **年次レポート**: 年別の支出状況
-- **カスタム期間**: 任意期間での集計
-
-##### 4.2 可視化機能
-- **グラフ表示**: 円グラフ、棒グラフ、線グラフ
-- **カテゴリ別分析**: カテゴリごとの支出割合
-- **トレンド分析**: 時系列での支出傾向
-
-#### 5. 予算管理機能
-- **月次予算設定**: 月ごとの予算上限設定
-- **カテゴリ別予算**: カテゴリごとの予算設定
-- **予算対実績**: 予算と実際の支出を比較表示
-- **予算アラート**: 予算超過時の警告表示
-
-#### 6. 通知機能
-- **予算アラート**: 予算の80%、100%到達時の通知
-- **精算リマインド**: 定期的な精算促進通知
-- **支出登録リマインド**: 支出記録の促進通知
-
-#### 7. データ管理機能
-##### 7.1 インポート・エクスポート
-- **CSVアップロード**: 既存データの一括インポート
-- **CSVダウンロード**: データの一括エクスポート
-- **データフォーマット**: 標準的なCSV形式での入出力
-
-##### 7.2 データ保持
-- **保存期間**: 最長3年間のデータ保持
-- **自動削除**: 3年経過データの自動削除
-- **バックアップ**: データの定期バックアップ
-
-### 画面構成（想定）
-#### メイン画面
-- **ダッシュボード**: 今月の支出状況、予算残高表示
-- **支出入力画面**: 新規支出の登録
-- **支出一覧画面**: 個別・共通の支出履歴表示
-- **精算画面**: 分担計算と精算実行
-- **レポート画面**: グラフ・チャートでの分析表示
-- **設定画面**: 分担比率、カテゴリ、予算設定
-
-### 非機能要件
-#### セキュリティ
-- ユーザー認証の実装
-- データの暗号化
-- プライバシー保護
-
-#### パフォーマンス
-- レスポンシブデザイン
-- 高速なデータ処理
-- モバイル対応
-
-#### 拡張性
-- 将来的な収入管理機能追加に対応
-- 追加機能の実装余地を確保
-
-### 開発ロードマップ
-
-#### ✅ Phase 1（完了）- 基盤構築
-- ユーザー認証システム
-- 基本画面構成（ダッシュボード、ログイン、登録）
-- Docker開発環境
-- パフォーマンス最適化（認証キャッシュ、リダイレクト高速化）
-
-#### 🚧 Phase 2（開発中）- 支出管理機能
-- 支出記録機能
-- カテゴリ管理
-- 支出一覧・編集・削除
-- 個別・共通ページ表示
-
-#### 📋 Phase 3（予定）- 分担・精算機能
-- 分担比率設定
-- 精算計算・実行
-- 精算履歴管理
-
-#### 📋 Phase 4（予定）- 分析・レポート機能
-- 月次・年次レポート
-- グラフ・チャート表示
-- カテゴリ別分析
-
-#### 📋 Phase 5（予定）- 高度な機能
-- 予算管理機能
-- 通知機能
-- CSV入出力
-- UI/UX改善
-
-### パフォーマンス最適化
-
-#### 実装済み最適化
-- **認証キャッシュ**: 5分間のキャッシュでAPI呼び出しを削減
-- **重複処理防止**: 同時実行される認証チェックを制御
-- **条件付きAPI呼び出し**: 必要な場合のみAPIリクエストを実行
-- **高速リダイレクト**: 認証状態に基づく即座のページ遷移
-
-### 開発ガイドライン
-
-#### コーディング規約
-- **フロントエンド**: ESLint + Prettier設定に従う
-- **バックエンド**: PSR-12準拠
-- **コミットメッセージ**: Conventional Commits形式
-
-#### ブランチ戦略
+### ブランチ戦略
 - `main`: 本番環境
+- `develop`: 開発環境
 - `feature/*`: 機能開発
 - `hotfix/*`: 緊急修正
 
-#### テスト方針
-- **フロントエンド**: Jest + React Testing Library
-- **バックエンド**: PHPUnit
-- **E2E**: Playwright（予定）
+### コミット規約
+Conventional Commitsに従ってください：
+```
+feat: 新機能
+fix: バグ修正
+docs: ドキュメント更新
+style: コードスタイル修正
+refactor: リファクタリング
+test: テスト追加・修正
+chore: その他の作業
+```
 
-### トラブルシューティング
+## デプロイ
 
-#### よくある問題
-1. **Docker起動エラー**: Docker Desktopが起動していることを確認
-2. **ポート競合**: 他のアプリケーションがポート3000, 8000, 80を使用していないか確認
-3. **認証エラー**: バックエンドAPIサーバーが正常に起動していることを確認
+### Vercelへのデプロイ
+1. GitHubリポジトリをVercelに接続
+2. 環境変数を設定
+3. 自動デプロイが実行されます
 
-詳細なトラブルシューティングは [README-Docker.md](./README-Docker.md) を参照してください。
+### Vercel環境変数設定
+本番環境では以下の環境変数をVercelダッシュボードで設定：
 
-### コントリビューション
+```env
+# NextAuth設定
+NEXTAUTH_URL=https://your-domain.vercel.app
+NEXTAUTH_SECRET=your_production_nextauth_secret
+
+# Supabase設定
+NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_production_supabase_service_role_key
+
+# OAuth Provider設定
+GOOGLE_CLIENT_ID=your_production_google_client_id
+GOOGLE_CLIENT_SECRET=your_production_google_client_secret
+```
+
+## 機能要件
+
+### 認証機能
+- ユーザー登録・ログイン
+- パスワードリセット
+- ソーシャルログイン（Google, GitHub）
+
+### 支出管理機能
+- 支出の登録・編集・削除
+- カテゴリ別分類
+- 日付・金額・メモの記録
+- 画像添付（レシート等）
+
+### 精算機能
+- 期間指定での精算計算
+- 分担比率設定（50:50, 60:40等）
+- 精算履歴管理
+- 精算状況の可視化
+
+### リアルタイム機能
+- パートナー間でのデータ同期
+- 新しい支出の即座な反映
+- 精算通知
+
+## テスト
+
+```bash
+# 単体テスト実行
+npm run test
+
+# E2Eテスト実行
+npm run test:e2e
+
+# テストカバレッジ確認
+npm run test:coverage
+```
+
+## 貢献
 プルリクエストを歓迎します。大きな変更を行う場合は、まずIssueを作成して議論してください。
-
-### ライセンス
-このプロジェクトはMITライセンスの下で公開されています。
 
 ---
 
-**現在のバージョン**: v1.0.0-alpha  
-**最終更新**: 2025年5月28日
+**開発状況**: 🚧 開発中  
+**バージョン**: v0.1.0  
+**最終更新**: 2025年1月
