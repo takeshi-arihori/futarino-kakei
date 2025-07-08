@@ -1,0 +1,7 @@
+Contact: security@futarino-kakei.com
+Expires: 2025-12-31T23:59:59.000Z
+Preferred-Languages: ja, en
+Canonical: https://www.futarino-kakei.com/.well-known/security.txt
+
+# セキュリティに関する問題を発見した場合は、上記の連絡先までお知らせください。
+# 責任ある開示をお願いいたします。
