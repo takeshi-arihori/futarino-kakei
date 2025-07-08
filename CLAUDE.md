@@ -1,9 +1,11 @@
 # カップル・夫婦専用家計アプリ「ふたりの家計」
 
 ## プロジェクト概要
+
 カップル・夫婦が共同で家計管理を行うためのWebアプリケーションです。日々の支出の記録から、面倒な精算までをスマートに解決することを目指します。
 
 ## 技術スタック
+
 - **フロントエンド**: Next.js 15+ (App Router), TypeScript, Tailwind CSS
 - **認証**: NextAuth.js v5 (Auth.js)
 - **データベース**: Supabase (PostgreSQL, Realtime)
@@ -11,6 +13,7 @@
 - **開発環境**: Node.js 20+
 
 ## 主要機能
+
 - **認証システム**: NextAuth.js v5による安全なユーザー認証（OAuth、Magic Link対応）
 - **支出管理**: 支出の登録・編集・削除、カテゴリ分類
 - **精算機能**: 自動的な支出分担計算と精算履歴
@@ -20,6 +23,7 @@
 ## データベーススキーマ
 
 ### NextAuthユーザー情報
+
 ```sql
 CREATE TABLE users (
   id TEXT PRIMARY KEY,
@@ -33,6 +37,7 @@ CREATE TABLE users (
 ```
 
 ### カップル関係
+
 ```sql
 CREATE TABLE couples (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -44,6 +49,7 @@ CREATE TABLE couples (
 ```
 
 ### 支出記録
+
 ```sql
 CREATE TABLE expenses (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -60,6 +66,7 @@ CREATE TABLE expenses (
 ```
 
 ### 精算記録
+
 ```sql
 CREATE TABLE settlements (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -75,6 +82,7 @@ CREATE TABLE settlements (
 ```
 
 ## プロジェクト構造
+
 ```
 futarino-kakei/
 ├── src/
@@ -104,6 +112,7 @@ futarino-kakei/
 ```
 
 ## 開発環境セットアップ
+
 ```bash
 # 依存関係のインストール
 npm install
@@ -116,6 +125,7 @@ http://localhost:3000
 ```
 
 ## 環境変数
+
 ```env
 # NextAuth設定
 NEXTAUTH_URL=http://localhost:3000
@@ -132,13 +142,16 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
 
 ## 開発ワークフロー
+
 - `main`: 本番環境
 - `develop`: 開発環境
 - `feature/*`: 機能開発
 - `hotfix/*`: 緊急修正
 
 ## コミット規約
+
 Conventional Commitsに従ってください：
+
 ```
 feat: 新機能
 fix: バグ修正
@@ -150,9 +163,11 @@ chore: その他の作業
 ```
 
 ## 開発状況
+
 🚧 開発中（v0.1.0）
 
 ## 現在の実装状況
+
 - ✅ Next.js 15プロジェクトの基本構造完成
 - ✅ TypeScript、Tailwind CSS、ESLint・Prettier設定完了
 - ✅ 基本的なフォルダ構造とユーティリティ関数作成
@@ -163,6 +178,7 @@ chore: その他の作業
 - 🚧 認証システムの実装（次のタスク）
 
 ## 次の開発タスク
+
 1. ✅ Next.js 15プロジェクトの初期化（完了）
 2. Supabaseプロジェクト作成とデータベーススキーマ構築
 3. NextAuth.js v5とSupabase認証の設定
