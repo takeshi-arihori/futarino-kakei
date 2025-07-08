@@ -1,0 +1,183 @@
+// データベース設計図（dbdiagram.io用）
+// https://dbdiagram.io/ にコピーして視覚化可能
+
+Table users {
+  id text [pk]
+  name text
+  email text [unique]
+  email_verified timestamp
+  image text
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+Table accounts {
+  id text [pk]
+  user_id text [ref: > users.id, not null]
+  type text [not null]
+  provider text [not null]
+  provider_account_id text [not null]
+  refresh_token text
+  access_token text
+  expires_at bigint
+  token_type text
+  scope text
+  id_token text
+  session_state text
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    (provider, provider_account_id) [unique]
+    user_id
+    provider
+  }
+}
+
+Table sessions {
+  id text [pk]
+  session_token text [unique, not null]
+  user_id text [ref: > users.id, not null]
+  expires timestamp [not null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    user_id
+    session_token
+    expires
+  }
+}
+
+Table couples {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user1_id text [ref: > users.id, not null]
+  user2_id text [ref: > users.id]
+  name text
+  invite_code text [unique]
+  invite_expires_at timestamp
+  status text [default: 'active']
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    user1_id
+    user2_id
+    invite_code
+    status
+  }
+}
+
+Table expense_categories {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name text [not null]
+  color text [not null, default: '#6B7280']
+  icon text [not null, default: '💰']
+  is_default boolean [default: false]
+  couple_id uuid [ref: > couples.id]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    couple_id
+    is_default
+  }
+}
+
+Table expenses {
+  id uuid [pk, default: `gen_random_uuid()`]
+  couple_id uuid [ref: > couples.id, not null]
+  user_id text [ref: > users.id, not null]
+  category_id uuid [ref: > expense_categories.id, not null]
+  amount decimal(10,2) [not null]
+  description text
+  date date [not null]
+  receipt_image_url text
+  is_settled boolean [default: false]
+  split_ratio decimal(3,2) [default: 0.50]
+  notes text
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    couple_id
+    user_id
+    category_id
+    date
+    is_settled
+    created_at
+  }
+}
+
+Table settlements {
+  id uuid [pk, default: `gen_random_uuid()`]
+  couple_id uuid [ref: > couples.id, not null]
+  from_user_id text [ref: > users.id, not null]
+  to_user_id text [ref: > users.id, not null]
+  amount decimal(10,2) [not null]
+  period_start date [not null]
+  period_end date [not null]
+  status text [default: 'pending']
+  settlement_date timestamp
+  notes text
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    couple_id
+    from_user_id
+    to_user_id
+    status
+    (period_start, period_end)
+  }
+}
+
+Table settlement_expenses {
+  id uuid [pk, default: `gen_random_uuid()`]
+  settlement_id uuid [ref: > settlements.id, not null]
+  expense_id uuid [ref: > expenses.id, not null]
+  created_at timestamp [default: `now()`]
+  
+  indexes {
+    settlement_id
+    expense_id
+    (settlement_id, expense_id) [unique]
+  }
+}
+
+Table budgets {
+  id uuid [pk, default: `gen_random_uuid()`]
+  couple_id uuid [ref: > couples.id, not null]
+  category_id uuid [ref: > expense_categories.id]
+  amount decimal(10,2) [not null]
+  period_type text [not null]
+  start_date date [not null]
+  end_date date
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    couple_id
+    category_id
+    (start_date, end_date)
+    is_active
+  }
+}
+
+Table category_usage_stats {
+  id uuid [pk, default: `gen_random_uuid()`]
+  couple_id uuid [ref: > couples.id, not null]
+  category_id uuid [ref: > expense_categories.id, not null]
+  usage_count integer [default: 0]
+  last_used_at timestamp
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    couple_id
+    category_id
+    (couple_id, category_id) [unique]
+    usage_count
+  }
+}
