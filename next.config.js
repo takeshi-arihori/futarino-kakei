@@ -37,7 +37,7 @@ const nextConfig = {
         destination: '/auth/signup',
         permanent: true,
       },
-    ]
+    ];
   },
 
   // セキュリティヘッダー
@@ -64,7 +64,7 @@ const nextConfig = {
           },
         ],
       },
-    ]
+    ];
   },
 
   // PWA設定（将来的に追加予定）
@@ -73,6 +73,6 @@ const nextConfig = {
   //   register: true,
   //   skipWaiting: true,
   // },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
