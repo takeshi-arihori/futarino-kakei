@@ -19,7 +19,7 @@ export default function Home() {
     return (
       <div className='min-h-screen flex items-center justify-center bg-gray-50'>
         <div className='text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto'></div>
+          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto'></div>
           <p className='mt-4 text-gray-600'>読み込み中...</p>
         </div>
       </div>
@@ -27,7 +27,7 @@ export default function Home() {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-indigo-50 to-white'>
+    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-white'>
       {/* ヘッダー */}
       <header className='relative overflow-hidden bg-white shadow-sm'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -44,7 +44,8 @@ export default function Home() {
               </Link>
               <Link
                 href='/signup'
-                className='bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium'
+                className='bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-medium'
+                style={{ color: 'white' }}
               >
                 はじめる
               </Link>
@@ -61,7 +62,7 @@ export default function Home() {
             <div className='text-center'>
               <h1 className='text-4xl font-extrabold text-gray-900 sm:text-5xl lg:text-6xl'>
                 <span className='block'>ふたりで始める</span>
-                <span className='block text-indigo-600'>かんたん家計管理</span>
+                <span className='block text-blue-600'>かんたん家計管理</span>
               </h1>
               <p className='mt-6 text-xl text-gray-500 max-w-3xl mx-auto'>
                 カップル・夫婦専用の家計管理アプリ。支出の記録から面倒な精算まで、すべてをスマートに解決します。
@@ -69,13 +70,14 @@ export default function Home() {
               <div className='mt-10 flex justify-center space-x-4'>
                 <Link
                   href='/signup'
-                  className='bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-md text-lg font-medium shadow-lg hover:shadow-xl transition-all'
+                  className='bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-md text-lg font-medium shadow-lg hover:shadow-xl transition-all'
+                  style={{ color: 'white' }}
                 >
                   無料で始める
                 </Link>
                 <Link
                   href='/signin'
-                  className='bg-white hover:bg-gray-50 text-indigo-600 border border-indigo-600 px-8 py-3 rounded-md text-lg font-medium shadow-lg hover:shadow-xl transition-all'
+                  className='bg-white hover:bg-gray-50 text-blue-600 border border-blue-600 px-8 py-3 rounded-md text-lg font-medium shadow-lg hover:shadow-xl transition-all'
                 >
                   ログイン
                 </Link>
@@ -167,19 +169,20 @@ export default function Home() {
         </div>
 
         {/* CTA セクション */}
-        <div className='bg-indigo-600'>
+        <div className='bg-blue-600'>
           <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16'>
             <div className='text-center'>
               <h2 className='text-3xl font-extrabold text-white'>
                 今すぐふたりの家計を始めませんか？
               </h2>
-              <p className='mt-4 text-xl text-indigo-200'>
+              <p className='mt-4 text-xl text-blue-200'>
                 無料で始められます。クレジットカードは不要です。
               </p>
               <div className='mt-8'>
                 <Link
                   href='/signup'
-                  className='bg-white hover:bg-gray-100 text-indigo-600 px-8 py-3 rounded-md text-lg font-medium shadow-lg hover:shadow-xl transition-all'
+                  className='bg-white hover:bg-gray-100 px-8 py-3 rounded-md text-lg font-medium shadow-lg hover:shadow-xl transition-all'
+                  style={{ color: 'white' }}
                 >
                   無料アカウントを作成
                 </Link>

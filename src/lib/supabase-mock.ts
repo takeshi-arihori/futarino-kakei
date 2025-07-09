@@ -14,23 +14,25 @@ export const mockSupabase = {
     }),
     insert: () => ({
       select: () => ({
-        single: () => Promise.resolve({ 
-          data: { 
-            id: 'mock-id', 
-            invite_code: 'MOCK1234',
-            name: 'モックカップル' 
-          }, 
-          error: null 
-        }),
+        single: () =>
+          Promise.resolve({
+            data: {
+              id: 'mock-id',
+              invite_code: 'MOCK1234',
+              name: 'モックカップル',
+            },
+            error: null,
+          }),
       }),
     }),
     update: () => ({
       eq: () => ({
         select: () => ({
-          single: () => Promise.resolve({ 
-            data: { id: 'mock-id', status: 'active' }, 
-            error: null 
-          }),
+          single: () =>
+            Promise.resolve({
+              data: { id: 'mock-id', status: 'active' },
+              error: null,
+            }),
         }),
       }),
     }),
