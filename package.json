@@ -16,7 +16,7 @@
   "dependencies": {
     "@auth/supabase-adapter": "^1.10.0",
     "@headlessui/react": "^2.2.4",
-    "@supabase/supabase-js": "^2.50.3",
+    "@supabase/supabase-js": "^2.50.4",
     "clsx": "^2.1.1",
     "next": "15.3.5",
     "next-auth": "^4.24.11",

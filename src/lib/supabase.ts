@@ -14,12 +14,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // サーバーサイド用（Service Role Key使用）
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseServiceRoleKey) {
-  console.warn(
-    'SUPABASE_SERVICE_ROLE_KEYが設定されていません。管理者機能が制限されます。'
-  );
-}
-
 export const supabaseAdmin = supabaseServiceRoleKey
   ? createClient(supabaseUrl, supabaseServiceRoleKey, {
       auth: {
@@ -29,7 +23,7 @@ export const supabaseAdmin = supabaseServiceRoleKey
     })
   : null;
 
-// TypeScript型定義のエクスポート
+// TypeScript型定義
 export type Database = {
   public: {
     Tables: {
@@ -58,7 +52,6 @@ export type Database = {
           email?: string;
           email_verified?: string | null;
           image?: string | null;
-          created_at?: string;
           updated_at?: string;
         };
       };
@@ -66,66 +59,55 @@ export type Database = {
         Row: {
           id: string;
           user1_id: string;
-          user2_id: string | null;
+          user2_id: string;
           name: string | null;
-          invite_code: string | null;
-          invite_expires_at: string | null;
-          status: string;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           user1_id: string;
-          user2_id?: string | null;
+          user2_id: string;
           name?: string | null;
-          invite_code?: string | null;
-          invite_expires_at?: string | null;
-          status?: string;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           user1_id?: string;
-          user2_id?: string | null;
+          user2_id?: string;
           name?: string | null;
-          invite_code?: string | null;
-          invite_expires_at?: string | null;
-          status?: string;
-          created_at?: string;
           updated_at?: string;
         };
       };
-      expense_categories: {
+      categories: {
         Row: {
           id: string;
+          couple_id: string;
           name: string;
           color: string;
           icon: string;
           is_default: boolean;
-          couple_id: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
+          couple_id: string;
           name: string;
           color?: string;
           icon?: string;
           is_default?: boolean;
-          couple_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
+          couple_id?: string;
           name?: string;
           color?: string;
           icon?: string;
           is_default?: boolean;
-          couple_id?: string | null;
-          created_at?: string;
           updated_at?: string;
         };
       };
@@ -134,14 +116,12 @@ export type Database = {
           id: string;
           couple_id: string;
           user_id: string;
-          category_id: string;
           amount: number;
-          description: string | null;
+          description: string;
+          category_id: string | null;
           date: string;
-          receipt_image_url: string | null;
-          is_settled: boolean;
           split_ratio: number;
-          notes: string | null;
+          is_settled: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -149,14 +129,12 @@ export type Database = {
           id?: string;
           couple_id: string;
           user_id: string;
-          category_id: string;
           amount: number;
-          description?: string | null;
+          description: string;
+          category_id?: string | null;
           date: string;
-          receipt_image_url?: string | null;
-          is_settled?: boolean;
           split_ratio?: number;
-          notes?: string | null;
+          is_settled?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -164,15 +142,12 @@ export type Database = {
           id?: string;
           couple_id?: string;
           user_id?: string;
-          category_id?: string;
           amount?: number;
-          description?: string | null;
+          description?: string;
+          category_id?: string | null;
           date?: string;
-          receipt_image_url?: string | null;
-          is_settled?: boolean;
           split_ratio?: number;
-          notes?: string | null;
-          created_at?: string;
+          is_settled?: boolean;
           updated_at?: string;
         };
       };
@@ -186,10 +161,10 @@ export type Database = {
           period_start: string;
           period_end: string;
           status: string;
-          settlement_date: string | null;
-          notes: string | null;
+          note: string | null;
           created_at: string;
           updated_at: string;
+          completed_at: string | null;
         };
         Insert: {
           id?: string;
@@ -200,10 +175,10 @@ export type Database = {
           period_start: string;
           period_end: string;
           status?: string;
-          settlement_date?: string | null;
-          notes?: string | null;
+          note?: string | null;
           created_at?: string;
           updated_at?: string;
+          completed_at?: string | null;
         };
         Update: {
           id?: string;
@@ -214,12 +189,142 @@ export type Database = {
           period_start?: string;
           period_end?: string;
           status?: string;
-          settlement_date?: string | null;
-          notes?: string | null;
+          note?: string | null;
+          updated_at?: string;
+          completed_at?: string | null;
+        };
+      };
+      settlement_expenses: {
+        Row: {
+          id: string;
+          settlement_id: string;
+          expense_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          settlement_id: string;
+          expense_id: string;
           created_at?: string;
+        };
+        Update: {
+          id?: string;
+          settlement_id?: string;
+          expense_id?: string;
+        };
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          type: string;
+          title: string;
+          message: string;
+          settlement_id: string | null;
+          expense_id: string | null;
+          read: boolean;
+          action_required: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          type: string;
+          title: string;
+          message: string;
+          settlement_id?: string | null;
+          expense_id?: string | null;
+          read?: boolean;
+          action_required?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          type?: string;
+          title?: string;
+          message?: string;
+          settlement_id?: string | null;
+          expense_id?: string | null;
+          read?: boolean;
+          action_required?: boolean;
+          updated_at?: string;
+        };
+      };
+      notification_settings: {
+        Row: {
+          id: string;
+          user_id: string;
+          email_notifications: boolean;
+          push_notifications: boolean;
+          reminder_days: number;
+          auto_reminder: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          email_notifications?: boolean;
+          push_notifications?: boolean;
+          reminder_days?: number;
+          auto_reminder?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          email_notifications?: boolean;
+          push_notifications?: boolean;
+          reminder_days?: number;
+          auto_reminder?: boolean;
           updated_at?: string;
         };
       };
     };
   };
+};
+
+// 型付きクライアント
+export const typedSupabase = supabase as typeof supabase & {
+  from: <T extends keyof Database['public']['Tables']>(
+    table: T
+  ) => any;
+};
+
+// ヘルパー型
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
+export type Inserts<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
+export type Updates<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
+
+// 具体的な型エイリアス
+export type User = Tables<'users'>;
+export type Couple = Tables<'couples'>;
+export type Category = Tables<'categories'>;
+export type Expense = Tables<'expenses'>;
+export type Settlement = Tables<'settlements'>;
+export type SettlementExpense = Tables<'settlement_expenses'>;
+export type Notification = Tables<'notifications'>;
+export type NotificationSettings = Tables<'notification_settings'>;
+
+// 拡張された型（JOINクエリ用）
+export type ExpenseWithCategory = Expense & {
+  category: Category | null;
+  user: Pick<User, 'id' | 'name'>;
+};
+
+export type SettlementWithExpenses = Settlement & {
+  from_user: Pick<User, 'id' | 'name'>;
+  to_user: Pick<User, 'id' | 'name'>;
+  settlement_expenses: (SettlementExpense & {
+    expense: ExpenseWithCategory;
+  })[];
+};
+
+export type NotificationWithRelations = Notification & {
+  settlement?: Pick<Settlement, 'id' | 'amount'> | null;
+  expense?: Pick<Expense, 'id' | 'description' | 'amount'> | null;
 };
