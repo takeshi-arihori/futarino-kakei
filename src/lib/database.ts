@@ -1,11 +1,14 @@
 import { supabase } from './supabase';
+
+// Export supabase for use in API routes
+export { supabase };
 import type {
   User,
   Couple,
   Category,
   Expense,
   Settlement,
-  SettlementExpense,
+  // SettlementExpense, // Currently unused - may be needed for future settlement expense operations
   Notification,
   NotificationSettings,
   ExpenseWithCategory,
@@ -16,7 +19,10 @@ import type {
 
 // エラーハンドリング用のヘルパー
 class DatabaseError extends Error {
-  constructor(message: string, public originalError?: unknown) {
+  constructor(
+    message: string,
+    public originalError?: unknown
+  ) {
     super(message);
     this.name = 'DatabaseError';
   }
@@ -33,7 +39,8 @@ export const userOperations = {
         .eq('id', userId)
         .single();
 
-      if (error) throw new DatabaseError('ユーザー情報の取得に失敗しました', error);
+      if (error)
+        throw new DatabaseError('ユーザー情報の取得に失敗しました', error);
       return data;
     } catch (error) {
       console.error('ユーザー取得エラー:', error);
@@ -50,7 +57,8 @@ export const userOperations = {
         .select()
         .single();
 
-      if (error) throw new DatabaseError('ユーザー情報の保存に失敗しました', error);
+      if (error)
+        throw new DatabaseError('ユーザー情報の保存に失敗しました', error);
       return data;
     } catch (error) {
       console.error('ユーザー保存エラー:', error);
@@ -68,7 +76,8 @@ export const userOperations = {
         .select()
         .single();
 
-      if (error) throw new DatabaseError('ユーザー情報の更新に失敗しました', error);
+      if (error)
+        throw new DatabaseError('ユーザー情報の更新に失敗しました', error);
       return data;
     } catch (error) {
       console.error('ユーザー更新エラー:', error);
@@ -99,7 +108,11 @@ export const coupleOperations = {
   },
 
   // カップルの作成
-  async createCouple(user1Id: string, user2Id: string, name?: string): Promise<Couple> {
+  async createCouple(
+    user1Id: string,
+    user2Id: string,
+    name?: string
+  ): Promise<Couple> {
     try {
       const { data, error } = await supabase
         .from('couples')
@@ -111,7 +124,8 @@ export const coupleOperations = {
         .select()
         .single();
 
-      if (error) throw new DatabaseError('カップル関係の作成に失敗しました', error);
+      if (error)
+        throw new DatabaseError('カップル関係の作成に失敗しました', error);
       return data;
     } catch (error) {
       console.error('カップル作成エラー:', error);
@@ -120,7 +134,10 @@ export const coupleOperations = {
   },
 
   // カップル情報の更新
-  async updateCouple(coupleId: string, updates: Updates<'couples'>): Promise<Couple> {
+  async updateCouple(
+    coupleId: string,
+    updates: Updates<'couples'>
+  ): Promise<Couple> {
     try {
       const { data, error } = await supabase
         .from('couples')
@@ -129,7 +146,8 @@ export const coupleOperations = {
         .select()
         .single();
 
-      if (error) throw new DatabaseError('カップル情報の更新に失敗しました', error);
+      if (error)
+        throw new DatabaseError('カップル情報の更新に失敗しました', error);
       return data;
     } catch (error) {
       console.error('カップル更新エラー:', error);
@@ -150,7 +168,8 @@ export const categoryOperations = {
         .order('is_default', { ascending: false })
         .order('created_at', { ascending: true });
 
-      if (error) throw new DatabaseError('カテゴリ一覧の取得に失敗しました', error);
+      if (error)
+        throw new DatabaseError('カテゴリ一覧の取得に失敗しました', error);
       return data || [];
     } catch (error) {
       console.error('カテゴリ取得エラー:', error);
@@ -176,7 +195,10 @@ export const categoryOperations = {
   },
 
   // カテゴリの更新
-  async updateCategory(categoryId: string, updates: Updates<'categories'>): Promise<Category> {
+  async updateCategory(
+    categoryId: string,
+    updates: Updates<'categories'>
+  ): Promise<Category> {
     try {
       const { data, error } = await supabase
         .from('categories')
@@ -226,11 +248,13 @@ export const expenseOperations = {
     try {
       let query = supabase
         .from('expenses')
-        .select(`
+        .select(
+          `
           *,
           category:categories(*),
           user:users(id, name)
-        `)
+        `
+        )
         .eq('couple_id', coupleId)
         .order('date', { ascending: false })
         .order('created_at', { ascending: false });
@@ -251,7 +275,10 @@ export const expenseOperations = {
         query = query.limit(options.limit);
       }
       if (options?.offset) {
-        query = query.range(options.offset, options.offset + (options.limit || 50) - 1);
+        query = query.range(
+          options.offset,
+          options.offset + (options.limit || 50) - 1
+        );
       }
 
       const { data, error } = await query;
@@ -269,11 +296,13 @@ export const expenseOperations = {
     try {
       const { data, error } = await supabase
         .from('expenses')
-        .select(`
+        .select(
+          `
           *,
           category:categories(*),
           user:users(id, name)
-        `)
+        `
+        )
         .eq('id', expenseId)
         .single();
 
@@ -305,7 +334,10 @@ export const expenseOperations = {
   },
 
   // 支出の更新
-  async updateExpense(expenseId: string, updates: Updates<'expenses'>): Promise<Expense> {
+  async updateExpense(
+    expenseId: string,
+    updates: Updates<'expenses'>
+  ): Promise<Expense> {
     try {
       const { data, error } = await supabase
         .from('expenses')
@@ -357,7 +389,8 @@ export const settlementOperations = {
     try {
       let query = supabase
         .from('settlements')
-        .select(`
+        .select(
+          `
           *,
           from_user:users!settlements_from_user_id_fkey(id, name),
           to_user:users!settlements_to_user_id_fkey(id, name),
@@ -369,7 +402,8 @@ export const settlementOperations = {
               user:users(id, name)
             )
           )
-        `)
+        `
+        )
         .eq('couple_id', coupleId)
         .order('created_at', { ascending: false });
 
@@ -380,7 +414,10 @@ export const settlementOperations = {
         query = query.limit(options.limit);
       }
       if (options?.offset) {
-        query = query.range(options.offset, options.offset + (options.limit || 50) - 1);
+        query = query.range(
+          options.offset,
+          options.offset + (options.limit || 50) - 1
+        );
       }
 
       const { data, error } = await query;
@@ -394,11 +431,14 @@ export const settlementOperations = {
   },
 
   // 精算の詳細を取得
-  async getSettlement(settlementId: string): Promise<SettlementWithExpenses | null> {
+  async getSettlement(
+    settlementId: string
+  ): Promise<SettlementWithExpenses | null> {
     try {
       const { data, error } = await supabase
         .from('settlements')
-        .select(`
+        .select(
+          `
           *,
           from_user:users!settlements_from_user_id_fkey(id, name),
           to_user:users!settlements_to_user_id_fkey(id, name),
@@ -410,7 +450,8 @@ export const settlementOperations = {
               user:users(id, name)
             )
           )
-        `)
+        `
+        )
         .eq('id', settlementId)
         .single();
 
@@ -452,7 +493,10 @@ export const settlementOperations = {
         .insert(settlementExpenses);
 
       if (expensesError) {
-        throw new DatabaseError('精算対象支出の関連付けに失敗しました', expensesError);
+        throw new DatabaseError(
+          '精算対象支出の関連付けに失敗しました',
+          expensesError
+        );
       }
 
       return settlement;
@@ -463,7 +507,10 @@ export const settlementOperations = {
   },
 
   // 精算の更新
-  async updateSettlement(settlementId: string, updates: Updates<'settlements'>): Promise<Settlement> {
+  async updateSettlement(
+    settlementId: string,
+    updates: Updates<'settlements'>
+  ): Promise<Settlement> {
     try {
       const { data, error } = await supabase
         .from('settlements')
@@ -531,7 +578,9 @@ export const notificationOperations = {
   },
 
   // 通知の作成
-  async createNotification(notificationData: Inserts<'notifications'>): Promise<Notification> {
+  async createNotification(
+    notificationData: Inserts<'notifications'>
+  ): Promise<Notification> {
     try {
       const { data, error } = await supabase
         .from('notifications')
@@ -580,7 +629,8 @@ export const notificationOperations = {
         .eq('user_id', userId)
         .eq('read', false);
 
-      if (error) throw new DatabaseError('全通知の既読処理に失敗しました', error);
+      if (error)
+        throw new DatabaseError('全通知の既読処理に失敗しました', error);
     } catch (error) {
       console.error('全通知既読エラー:', error);
       throw error;
@@ -588,7 +638,9 @@ export const notificationOperations = {
   },
 
   // ユーザーの通知設定を取得
-  async getNotificationSettings(userId: string): Promise<NotificationSettings | null> {
+  async getNotificationSettings(
+    userId: string
+  ): Promise<NotificationSettings | null> {
     try {
       const { data, error } = await supabase
         .from('notification_settings')
@@ -654,10 +706,12 @@ export const statisticsOperations = {
     try {
       let query = supabase
         .from('expenses')
-        .select(`
+        .select(
+          `
           amount,
           category:categories(id, name)
-        `)
+        `
+        )
         .eq('couple_id', coupleId);
 
       if (startDate) query = query.gte('date', startDate);
@@ -673,10 +727,11 @@ export const statisticsOperations = {
 
       // カテゴリ別の集計
       const categoryMap = new Map();
-      expenses.forEach(exp => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expenses.forEach((exp: any) => {
         const categoryId = exp.category?.id || 'uncategorized';
         const categoryName = exp.category?.name || 'カテゴリなし';
-        
+
         if (!categoryMap.has(categoryId)) {
           categoryMap.set(categoryId, {
             category_id: categoryId,
@@ -685,7 +740,7 @@ export const statisticsOperations = {
             count: 0,
           });
         }
-        
+
         const category = categoryMap.get(categoryId);
         category.total_amount += exp.amount;
         category.count += 1;
@@ -728,9 +783,16 @@ export const statisticsOperations = {
 
       const settlements = data || [];
       const totalSettlements = settlements.length;
-      const totalAmount = settlements.reduce((sum, settlement) => sum + settlement.amount, 0);
-      const completedCount = settlements.filter(s => s.status === 'completed').length;
-      const pendingCount = settlements.filter(s => s.status === 'pending').length;
+      const totalAmount = settlements.reduce(
+        (sum, settlement) => sum + settlement.amount,
+        0
+      );
+      const completedCount = settlements.filter(
+        s => s.status === 'completed'
+      ).length;
+      const pendingCount = settlements.filter(
+        s => s.status === 'pending'
+      ).length;
 
       return {
         totalSettlements,

@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, HTMLAttributes, useEffect, useRef } from 'react';
+import { forwardRef, HTMLAttributes, useEffect } from 'react';
 import { clsx } from 'clsx';
 
 export interface ModalProps extends HTMLAttributes<HTMLDivElement> {
@@ -38,7 +38,7 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     },
     ref
   ) => {
-    const modalRef = useRef<HTMLDivElement>(null);
+    // const modalRef = useRef<HTMLDivElement>(null); // Unused - using ref prop instead
 
     useEffect(() => {
       const handleEscape = (e: KeyboardEvent) => {

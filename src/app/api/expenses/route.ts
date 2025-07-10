@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 import { authOptions } from '@/lib/auth';
+
 import { expenseOperations, coupleOperations } from '@/lib/database';
 
 export async function GET(request: NextRequest) {
@@ -13,17 +14,28 @@ export async function GET(request: NextRequest) {
     // ユーザーのカップル情報を取得
     const couple = await coupleOperations.getUserCouple(session.user.id);
     if (!couple) {
-      return NextResponse.json({ error: 'カップル関係が見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カップル関係が見つかりません' },
+        { status: 404 }
+      );
     }
 
     // クエリパラメータの取得
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : undefined;
-    const offset = searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : undefined;
+    const limit = searchParams.get('limit')
+      ? parseInt(searchParams.get('limit')!)
+      : undefined;
+    const offset = searchParams.get('offset')
+      ? parseInt(searchParams.get('offset')!)
+      : undefined;
     const startDate = searchParams.get('startDate') || undefined;
     const endDate = searchParams.get('endDate') || undefined;
-    const isSettled = searchParams.get('isSettled') === 'true' ? true : 
-                      searchParams.get('isSettled') === 'false' ? false : undefined;
+    const isSettled =
+      searchParams.get('isSettled') === 'true'
+        ? true
+        : searchParams.get('isSettled') === 'false'
+          ? false
+          : undefined;
     const categoryId = searchParams.get('categoryId') || undefined;
 
     // 支出一覧を取得
@@ -56,7 +68,10 @@ export async function POST(request: NextRequest) {
     // ユーザーのカップル情報を取得
     const couple = await coupleOperations.getUserCouple(session.user.id);
     if (!couple) {
-      return NextResponse.json({ error: 'カップル関係が見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カップル関係が見つかりません' },
+        { status: 404 }
+      );
     }
 
     // リクエストボディの解析
@@ -65,7 +80,10 @@ export async function POST(request: NextRequest) {
 
     // バリデーション
     if (!amount || amount <= 0) {
-      return NextResponse.json({ error: '金額は正の数値である必要があります' }, { status: 400 });
+      return NextResponse.json(
+        { error: '金額は正の数値である必要があります' },
+        { status: 400 }
+      );
     }
     if (!description || description.trim() === '') {
       return NextResponse.json({ error: '説明は必須です' }, { status: 400 });
@@ -74,7 +92,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '日付は必須です' }, { status: 400 });
     }
     if (split_ratio && (split_ratio < 0 || split_ratio > 1)) {
-      return NextResponse.json({ error: '分担比率は0から1の間である必要があります' }, { status: 400 });
+      return NextResponse.json(
+        { error: '分担比率は0から1の間である必要があります' },
+        { status: 400 }
+      );
     }
 
     // 支出を作成

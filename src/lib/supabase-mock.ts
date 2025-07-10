@@ -1,7 +1,8 @@
 // モック版のSupabaseクライアント（開発用）
 
 export const mockSupabase = {
-  from: (table: string) => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  from: (_table: string) => ({
     select: () => ({
       eq: () => ({
         single: () => Promise.resolve({ data: null, error: null }),

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation'; // TODO: Use when signup is implemented
 import Link from 'next/link';
 
 export default function SignUpPage() {
@@ -12,7 +12,7 @@ export default function SignUpPage() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
+  // const router = useRouter(); // TODO: Use when signup is implemented
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +31,7 @@ export default function SignUpPage() {
       setError(
         '現在、ユーザー登録機能は準備中です。ソーシャルログインをご利用ください。'
       );
-    } catch (err) {
+    } catch {
       setError('ユーザー登録に失敗しました');
     } finally {
       setLoading(false);
@@ -42,7 +42,7 @@ export default function SignUpPage() {
     setLoading(true);
     try {
       await signIn('google', { callbackUrl: '/onboarding' });
-    } catch (err) {
+    } catch {
       setError('Googleログインに失敗しました');
       setLoading(false);
     }
@@ -52,7 +52,7 @@ export default function SignUpPage() {
     setLoading(true);
     try {
       await signIn('github', { callbackUrl: '/onboarding' });
-    } catch (err) {
+    } catch {
       setError('GitHubログインに失敗しました');
       setLoading(false);
     }

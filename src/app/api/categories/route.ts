@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 import { authOptions } from '@/lib/auth';
 import { categoryOperations, coupleOperations } from '@/lib/database';
 
 export async function GET(request: NextRequest) {
+  console.log('Categories GET request:', request.url); // TODO: Remove in production
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -13,7 +14,10 @@ export async function GET(request: NextRequest) {
     // ユーザーのカップル情報を取得
     const couple = await coupleOperations.getUserCouple(session.user.id);
     if (!couple) {
-      return NextResponse.json({ error: 'カップル関係が見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カップル関係が見つかりません' },
+        { status: 404 }
+      );
     }
 
     // カテゴリ一覧を取得
@@ -39,7 +43,10 @@ export async function POST(request: NextRequest) {
     // ユーザーのカップル情報を取得
     const couple = await coupleOperations.getUserCouple(session.user.id);
     if (!couple) {
-      return NextResponse.json({ error: 'カップル関係が見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カップル関係が見つかりません' },
+        { status: 404 }
+      );
     }
 
     // リクエストボディの解析
@@ -48,7 +55,10 @@ export async function POST(request: NextRequest) {
 
     // バリデーション
     if (!name || name.trim() === '') {
-      return NextResponse.json({ error: 'カテゴリ名は必須です' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'カテゴリ名は必須です' },
+        { status: 400 }
+      );
     }
 
     // カテゴリを作成
@@ -63,7 +73,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newCategory, { status: 201 });
   } catch (error) {
     console.error('カテゴリ作成エラー:', error);
-    
+
     // 重複エラーのハンドリング
     if (error instanceof Error && error.message.includes('duplicate key')) {
       return NextResponse.json(
@@ -71,7 +81,7 @@ export async function POST(request: NextRequest) {
         { status: 409 }
       );
     }
-    
+
     return NextResponse.json(
       { error: 'カテゴリの作成に失敗しました' },
       { status: 500 }

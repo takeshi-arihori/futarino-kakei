@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 import { authOptions } from '@/lib/auth';
+
 import { statisticsOperations, coupleOperations } from '@/lib/database';
 
 export async function GET(request: NextRequest) {
@@ -13,7 +14,10 @@ export async function GET(request: NextRequest) {
     // ユーザーのカップル情報を取得
     const couple = await coupleOperations.getUserCouple(session.user.id);
     if (!couple) {
-      return NextResponse.json({ error: 'カップル関係が見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カップル関係が見つかりません' },
+        { status: 404 }
+      );
     }
 
     // クエリパラメータの取得

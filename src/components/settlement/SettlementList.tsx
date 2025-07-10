@@ -25,7 +25,8 @@ export default function SettlementList() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [showCompleteModal, setShowCompleteModal] = useState(false);
-  const [selectedSettlement, setSelectedSettlement] = useState<Settlement | null>(null);
+  const [selectedSettlement, setSelectedSettlement] =
+    useState<Settlement | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -36,10 +37,10 @@ export default function SettlementList() {
     try {
       // TODO: 実際のAPIコール
       console.log('精算一覧取得中...');
-      
+
       // 模擬データ
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       const mockSettlements: Settlement[] = [
         {
           id: '1',
@@ -51,7 +52,7 @@ export default function SettlementList() {
           status: 'completed',
           created_at: '2025-01-16T10:00:00Z',
           completed_at: '2025-01-16T14:30:00Z',
-          note: '1月前半の精算'
+          note: '1月前半の精算',
         },
         {
           id: '2',
@@ -63,7 +64,7 @@ export default function SettlementList() {
           status: 'completed',
           created_at: '2025-01-01T09:00:00Z',
           completed_at: '2025-01-02T11:00:00Z',
-          note: '12月後半の精算'
+          note: '12月後半の精算',
         },
         {
           id: '3',
@@ -74,10 +75,10 @@ export default function SettlementList() {
           period_end: '2025-01-31',
           status: 'pending',
           created_at: '2025-01-08T15:00:00Z',
-          note: '1月の支出精算'
-        }
+          note: '1月の支出精算',
+        },
       ];
-      
+
       setSettlements(mockSettlements);
     } catch (err) {
       setError('精算一覧の取得に失敗しました');
@@ -91,18 +92,22 @@ export default function SettlementList() {
     try {
       // TODO: 実際のAPIコール
       console.log('精算完了:', settlement.id);
-      
+
       // 模擬的な完了処理
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSettlements(prev => 
-        prev.map(s => 
-          s.id === settlement.id 
-            ? { ...s, status: 'completed' as const, completed_at: new Date().toISOString() }
+
+      setSettlements(prev =>
+        prev.map(s =>
+          s.id === settlement.id
+            ? {
+                ...s,
+                status: 'completed' as const,
+                completed_at: new Date().toISOString(),
+              }
             : s
         )
       );
-      
+
       setShowCompleteModal(false);
       setSelectedSettlement(null);
     } catch (err) {
@@ -114,13 +119,13 @@ export default function SettlementList() {
   const getStatusBadge = (status: Settlement['status']) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="warning">精算待ち</Badge>;
+        return <Badge variant='warning'>精算待ち</Badge>;
       case 'completed':
-        return <Badge variant="success">完了済み</Badge>;
+        return <Badge variant='success'>完了済み</Badge>;
       case 'cancelled':
-        return <Badge variant="danger">キャンセル</Badge>;
+        return <Badge variant='danger'>キャンセル</Badge>;
       default:
-        return <Badge variant="default">不明</Badge>;
+        return <Badge variant='default'>不明</Badge>;
     }
   };
 
@@ -144,42 +149,42 @@ export default function SettlementList() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2 text-gray-600">読み込み中...</span>
+      <div className='flex items-center justify-center py-8'>
+        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600'></div>
+        <span className='ml-2 text-gray-600'>読み込み中...</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+      <div className='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded'>
         {error}
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {/* フィルター */}
-      <div className="flex space-x-2">
+      <div className='flex space-x-2'>
         <Button
           variant={filter === 'all' ? 'primary' : 'outline'}
-          size="sm"
+          size='sm'
           onClick={() => setFilter('all')}
         >
           すべて ({settlements.length})
         </Button>
         <Button
           variant={filter === 'pending' ? 'primary' : 'outline'}
-          size="sm"
+          size='sm'
           onClick={() => setFilter('pending')}
         >
           精算待ち ({settlements.filter(s => s.status === 'pending').length})
         </Button>
         <Button
           variant={filter === 'completed' ? 'primary' : 'outline'}
-          size="sm"
+          size='sm'
           onClick={() => setFilter('completed')}
         >
           完了済み ({settlements.filter(s => s.status === 'completed').length})
@@ -188,66 +193,72 @@ export default function SettlementList() {
 
       {/* 精算一覧 */}
       {filteredSettlements.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className='text-center py-8 text-gray-500'>
           <p>精算履歴がありません</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {filteredSettlements.map((settlement) => (
+        <div className='space-y-3'>
+          {filteredSettlements.map(settlement => (
             <div
               key={settlement.id}
-              className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+              className='border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer'
               onClick={() => router.push(`/settlements/${settlement.id}`)}
             >
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <div className="text-2xl">
+              <div className='flex justify-between items-start'>
+                <div className='flex-1'>
+                  <div className='flex items-center space-x-3 mb-2'>
+                    <div className='text-2xl'>
                       {settlement.from_user_name === 'あなた' ? '💸' : '💰'}
                     </div>
                     <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-medium text-gray-900">
-                          {settlement.from_user_name} → {settlement.to_user_name}
+                      <div className='flex items-center space-x-2'>
+                        <span className='font-medium text-gray-900'>
+                          {settlement.from_user_name} →{' '}
+                          {settlement.to_user_name}
                         </span>
                         {getStatusBadge(settlement.status)}
                       </div>
-                      <p className="text-sm text-gray-600">
-                        {formatPeriod(settlement.period_start, settlement.period_end)}
+                      <p className='text-sm text-gray-600'>
+                        {formatPeriod(
+                          settlement.period_start,
+                          settlement.period_end
+                        )}
                       </p>
                     </div>
                   </div>
-                  
+
                   {settlement.note && (
-                    <p className="text-sm text-gray-600 mb-2">{settlement.note}</p>
+                    <p className='text-sm text-gray-600 mb-2'>
+                      {settlement.note}
+                    </p>
                   )}
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500">
+
+                  <div className='flex items-center justify-between'>
+                    <div className='text-sm text-gray-500'>
                       作成日: {formatDate(settlement.created_at)}
                       {settlement.completed_at && (
-                        <span className="ml-2">
+                        <span className='ml-2'>
                           完了日: {formatDate(settlement.completed_at)}
                         </span>
                       )}
                     </div>
                   </div>
                 </div>
-                
-                <div className="text-right ml-4">
-                  <div className="text-2xl font-bold text-gray-900">
+
+                <div className='text-right ml-4'>
+                  <div className='text-2xl font-bold text-gray-900'>
                     ¥{settlement.amount.toLocaleString()}
                   </div>
                   {settlement.status === 'pending' && (
                     <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={(e) => {
+                      variant='primary'
+                      size='sm'
+                      onClick={e => {
                         e.stopPropagation();
                         setSelectedSettlement(settlement);
                         setShowCompleteModal(true);
                       }}
-                      className="mt-2"
+                      className='mt-2'
                     >
                       精算完了
                     </Button>
@@ -263,41 +274,47 @@ export default function SettlementList() {
       <Modal
         isOpen={showCompleteModal}
         onClose={() => setShowCompleteModal(false)}
-        title="精算完了確認"
+        title='精算完了確認'
       >
         {selectedSettlement && (
-          <div className="space-y-4">
-            <p className="text-gray-700">
+          <div className='space-y-4'>
+            <p className='text-gray-700'>
               この精算を完了としてマークしますか？
             </p>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <span className="font-medium">
-                  {selectedSettlement.from_user_name} → {selectedSettlement.to_user_name}
+            <div className='bg-gray-50 p-4 rounded-lg'>
+              <div className='flex items-center space-x-2 mb-2'>
+                <span className='font-medium'>
+                  {selectedSettlement.from_user_name} →{' '}
+                  {selectedSettlement.to_user_name}
                 </span>
               </div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className='text-2xl font-bold text-gray-900'>
                 ¥{selectedSettlement.amount.toLocaleString()}
               </p>
-              <p className="text-sm text-gray-600">
-                {formatPeriod(selectedSettlement.period_start, selectedSettlement.period_end)}
+              <p className='text-sm text-gray-600'>
+                {formatPeriod(
+                  selectedSettlement.period_start,
+                  selectedSettlement.period_end
+                )}
               </p>
               {selectedSettlement.note && (
-                <p className="text-sm text-gray-600 mt-1">{selectedSettlement.note}</p>
+                <p className='text-sm text-gray-600 mt-1'>
+                  {selectedSettlement.note}
+                </p>
               )}
             </div>
-            <div className="flex space-x-3">
+            <div className='flex space-x-3'>
               <Button
-                variant="primary"
+                variant='primary'
                 onClick={() => handleCompleteSettlement(selectedSettlement)}
-                className="flex-1"
+                className='flex-1'
               >
                 完了にする
               </Button>
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={() => setShowCompleteModal(false)}
-                className="flex-1"
+                className='flex-1'
               >
                 キャンセル
               </Button>

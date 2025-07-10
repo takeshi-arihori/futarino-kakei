@@ -19,20 +19,20 @@ export default function SettlementsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* ヘッダー */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">精算管理</h1>
-        <div className="flex space-x-3">
+      <div className='flex justify-between items-center'>
+        <h1 className='text-2xl font-bold text-gray-900'>精算管理</h1>
+        <div className='flex space-x-3'>
           <Button
-            variant="outline"
+            variant='outline'
             onClick={() => router.push('/settlements/statistics')}
           >
             統計
           </Button>
           <Button
             onClick={() => setIsCreateModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700"
+            className='bg-blue-600 hover:bg-blue-700'
             style={{ color: 'white' }}
           >
             + 精算を作成
@@ -41,36 +41,34 @@ export default function SettlementsPage() {
       </div>
 
       {/* 精算サマリーカード */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
         <Card>
           <CardBody>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className='text-center'>
+              <h3 className='text-lg font-semibold text-gray-900'>
                 今月の精算額
               </h3>
-              <p className="text-3xl font-bold text-blue-600 mt-2">¥12,500</p>
+              <p className='text-3xl font-bold text-blue-600 mt-2'>¥12,500</p>
             </div>
           </CardBody>
         </Card>
 
         <Card>
           <CardBody>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className='text-center'>
+              <h3 className='text-lg font-semibold text-gray-900'>
                 未精算金額
               </h3>
-              <p className="text-3xl font-bold text-orange-600 mt-2">¥18,000</p>
+              <p className='text-3xl font-bold text-orange-600 mt-2'>¥18,000</p>
             </div>
           </CardBody>
         </Card>
 
         <Card>
           <CardBody>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900">
-                精算回数
-              </h3>
-              <p className="text-3xl font-bold text-green-600 mt-2">3回</p>
+            <div className='text-center'>
+              <h3 className='text-lg font-semibold text-gray-900'>精算回数</h3>
+              <p className='text-3xl font-bold text-green-600 mt-2'>3回</p>
             </div>
           </CardBody>
         </Card>
@@ -79,7 +77,7 @@ export default function SettlementsPage() {
       {/* 精算一覧 */}
       <Card>
         <CardHeader>
-          <h2 className="text-xl font-semibold text-gray-900">精算履歴</h2>
+          <h2 className='text-xl font-semibold text-gray-900'>精算履歴</h2>
         </CardHeader>
         <CardBody>
           <SettlementList key={refreshKey} />
@@ -90,8 +88,8 @@ export default function SettlementsPage() {
       <Modal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        title="精算を作成"
-        size="lg"
+        title='精算を作成'
+        size='lg'
       >
         <SettlementForm onSubmit={handleSettlementCreated} />
       </Modal>

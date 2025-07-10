@@ -5,5 +5,5 @@ export default function SettlementsLayout({
 }: {
   children: ReactNode;
 }) {
-  return <div className="min-h-screen bg-gray-50 p-4">{children}</div>;
+  return <div className='min-h-screen bg-gray-50 p-4'>{children}</div>;
 }

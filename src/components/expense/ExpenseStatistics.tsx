@@ -27,27 +27,28 @@ interface ExpenseStats {
   }[];
 }
 
-const DEFAULT_CATEGORIES = {
-  food: { name: '食費', color: 'bg-red-100 text-red-800', icon: '🍽️' },
-  transport: { name: '交通費', color: 'bg-blue-100 text-blue-800', icon: '🚗' },
-  shopping: {
-    name: '買い物',
-    color: 'bg-green-100 text-green-800',
-    icon: '🛒',
-  },
-  entertainment: {
-    name: '娯楽',
-    color: 'bg-purple-100 text-purple-800',
-    icon: '🎬',
-  },
-  utilities: {
-    name: '公共料金',
-    color: 'bg-yellow-100 text-yellow-800',
-    icon: '⚡',
-  },
-  medical: { name: '医療費', color: 'bg-pink-100 text-pink-800', icon: '🏥' },
-  other: { name: 'その他', color: 'bg-gray-100 text-gray-800', icon: '📦' },
-};
+// DEFAULT_CATEGORIES is not used in this component - data comes from mock API
+// const DEFAULT_CATEGORIES = {
+//   food: { name: '食費', color: 'bg-red-100 text-red-800', icon: '🍽️' },
+//   transport: { name: '交通費', color: 'bg-blue-100 text-blue-800', icon: '🚗' },
+//   shopping: {
+//     name: '買い物',
+//     color: 'bg-green-100 text-green-800',
+//     icon: '🛒',
+//   },
+//   entertainment: {
+//     name: '娯楽',
+//     color: 'bg-purple-100 text-purple-800',
+//     icon: '🎬',
+//   },
+//   utilities: {
+//     name: '公共料金',
+//     color: 'bg-yellow-100 text-yellow-800',
+//     icon: '⚡',
+//   },
+//   medical: { name: '医療費', color: 'bg-pink-100 text-pink-800', icon: '🏥' },
+//   other: { name: 'その他', color: 'bg-gray-100 text-gray-800', icon: '📦' },
+// };
 
 interface ExpenseStatisticsProps {
   period?: 'current_month' | 'last_month' | 'current_year' | 'all';
@@ -62,6 +63,7 @@ export default function ExpenseStatistics({
 
   useEffect(() => {
     fetchStatistics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period]);
 
   const fetchStatistics = async () => {

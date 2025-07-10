@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn, getSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -29,7 +29,7 @@ export default function SignInPage() {
       } else {
         router.push('/dashboard');
       }
-    } catch (err) {
+    } catch {
       setError('ログインに失敗しました');
     } finally {
       setLoading(false);
@@ -40,7 +40,7 @@ export default function SignInPage() {
     setLoading(true);
     try {
       await signIn('google', { callbackUrl: '/dashboard' });
-    } catch (err) {
+    } catch {
       setError('Googleログインに失敗しました');
       setLoading(false);
     }
@@ -50,7 +50,7 @@ export default function SignInPage() {
     setLoading(true);
     try {
       await signIn('github', { callbackUrl: '/dashboard' });
-    } catch (err) {
+    } catch {
       setError('GitHubログインに失敗しました');
       setLoading(false);
     }

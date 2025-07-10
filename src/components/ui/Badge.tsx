@@ -2,7 +2,7 @@ import { forwardRef, HTMLAttributes } from 'react';
 import { clsx } from 'clsx';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
+  variant?: 'default' | 'success' | 'warning' | 'error' | 'info' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
 }
@@ -20,6 +20,7 @@ const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       warning: 'bg-yellow-100 text-yellow-800',
       error: 'bg-red-100 text-red-800',
       info: 'bg-blue-100 text-blue-800',
+      danger: 'bg-red-100 text-red-800',
     };
 
     const sizes = {

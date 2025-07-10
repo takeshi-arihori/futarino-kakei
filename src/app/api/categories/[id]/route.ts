@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 import { authOptions } from '@/lib/auth';
 import { categoryOperations, coupleOperations, supabase } from '@/lib/database';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -16,23 +17,32 @@ export async function GET(
     // ユーザーのカップル情報を取得
     const couple = await coupleOperations.getUserCouple(session.user.id);
     if (!couple) {
-      return NextResponse.json({ error: 'カップル関係が見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カップル関係が見つかりません' },
+        { status: 404 }
+      );
     }
 
     // カテゴリ詳細を取得
     const { data: category, error } = await supabase
       .from('categories')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .single();
 
     if (error || !category) {
-      return NextResponse.json({ error: 'カテゴリが見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カテゴリが見つかりません' },
+        { status: 404 }
+      );
     }
 
     // 権限チェック（カップルのカテゴリかどうか）
     if (category.couple_id !== couple.id) {
-      return NextResponse.json({ error: 'アクセス権限がありません' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'アクセス権限がありません' },
+        { status: 403 }
+      );
     }
 
     return NextResponse.json(category);
@@ -47,8 +57,9 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -58,28 +69,40 @@ export async function PUT(
     // ユーザーのカップル情報を取得
     const couple = await coupleOperations.getUserCouple(session.user.id);
     if (!couple) {
-      return NextResponse.json({ error: 'カップル関係が見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カップル関係が見つかりません' },
+        { status: 404 }
+      );
     }
 
     // 既存のカテゴリを取得
     const { data: existingCategory, error: fetchError } = await supabase
       .from('categories')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .single();
 
     if (fetchError || !existingCategory) {
-      return NextResponse.json({ error: 'カテゴリが見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カテゴリが見つかりません' },
+        { status: 404 }
+      );
     }
 
     // 権限チェック
     if (existingCategory.couple_id !== couple.id) {
-      return NextResponse.json({ error: 'アクセス権限がありません' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'アクセス権限がありません' },
+        { status: 403 }
+      );
     }
 
     // デフォルトカテゴリは編集できない
     if (existingCategory.is_default) {
-      return NextResponse.json({ error: 'デフォルトカテゴリは編集できません' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'デフォルトカテゴリは編集できません' },
+        { status: 400 }
+      );
     }
 
     // リクエストボディの解析
@@ -87,10 +110,14 @@ export async function PUT(
     const { name, color, icon } = body;
 
     // バリデーション
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updates: any = {};
     if (name !== undefined) {
       if (name.trim() === '') {
-        return NextResponse.json({ error: 'カテゴリ名は必須です' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'カテゴリ名は必須です' },
+          { status: 400 }
+        );
       }
       updates.name = name.trim();
     }
@@ -102,12 +129,15 @@ export async function PUT(
     }
 
     // カテゴリを更新
-    const updatedCategory = await categoryOperations.updateCategory(params.id, updates);
+    const updatedCategory = await categoryOperations.updateCategory(
+      resolvedParams.id,
+      updates
+    );
 
     return NextResponse.json(updatedCategory);
   } catch (error) {
     console.error('カテゴリ更新エラー:', error);
-    
+
     // 重複エラーのハンドリング
     if (error instanceof Error && error.message.includes('duplicate key')) {
       return NextResponse.json(
@@ -115,7 +145,7 @@ export async function PUT(
         { status: 409 }
       );
     }
-    
+
     return NextResponse.json(
       { error: 'カテゴリの更新に失敗しました' },
       { status: 500 }
@@ -125,8 +155,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -136,35 +167,47 @@ export async function DELETE(
     // ユーザーのカップル情報を取得
     const couple = await coupleOperations.getUserCouple(session.user.id);
     if (!couple) {
-      return NextResponse.json({ error: 'カップル関係が見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カップル関係が見つかりません' },
+        { status: 404 }
+      );
     }
 
     // 既存のカテゴリを取得
     const { data: existingCategory, error: fetchError } = await supabase
       .from('categories')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .single();
 
     if (fetchError || !existingCategory) {
-      return NextResponse.json({ error: 'カテゴリが見つかりません' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'カテゴリが見つかりません' },
+        { status: 404 }
+      );
     }
 
     // 権限チェック
     if (existingCategory.couple_id !== couple.id) {
-      return NextResponse.json({ error: 'アクセス権限がありません' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'アクセス権限がありません' },
+        { status: 403 }
+      );
     }
 
     // デフォルトカテゴリは削除できない
     if (existingCategory.is_default) {
-      return NextResponse.json({ error: 'デフォルトカテゴリは削除できません' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'デフォルトカテゴリは削除できません' },
+        { status: 400 }
+      );
     }
 
     // このカテゴリを使用している支出があるかチェック
     const { data: expensesUsingCategory, error: expenseError } = await supabase
       .from('expenses')
       .select('id')
-      .eq('category_id', params.id)
+      .eq('category_id', resolvedParams.id)
       .limit(1);
 
     if (expenseError) {
@@ -179,7 +222,7 @@ export async function DELETE(
     }
 
     // カテゴリを削除
-    await categoryOperations.deleteCategory(params.id);
+    await categoryOperations.deleteCategory(resolvedParams.id);
 
     return NextResponse.json({ message: 'カテゴリを削除しました' });
   } catch (error) {

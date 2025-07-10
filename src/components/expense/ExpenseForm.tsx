@@ -87,6 +87,7 @@ export default function ExpenseForm({
 
       onSubmit();
     } catch (err) {
+      console.error('支出の保存に失敗:', err);
       setError('支出の保存に失敗しました');
     } finally {
       setLoading(false);

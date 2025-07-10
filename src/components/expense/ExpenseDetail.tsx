@@ -56,6 +56,7 @@ export default function ExpenseDetail({ expenseId }: ExpenseDetailProps) {
 
   useEffect(() => {
     fetchExpense();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expenseId]);
 
   const fetchExpense = async () => {

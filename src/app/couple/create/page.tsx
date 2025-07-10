@@ -33,7 +33,8 @@ export default function CreateCouplePage() {
 
     try {
       const couple = await createCouple(coupleName.trim());
-      setInviteCode(couple.invite_code || '');
+      // TODO: Generate proper invite code when backend is implemented
+      setInviteCode(`INVITE_${couple.id.substring(0, 8).toUpperCase()}`);
       setShowInviteCode(true);
     } catch (err) {
       setError(

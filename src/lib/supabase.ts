@@ -292,13 +292,17 @@ export type Database = {
 export const typedSupabase = supabase as typeof supabase & {
   from: <T extends keyof Database['public']['Tables']>(
     table: T
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) => any;
 };
 
 // ヘルパー型
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
-export type Inserts<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
-export type Updates<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
+export type Tables<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Row'];
+export type Inserts<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Insert'];
+export type Updates<T extends keyof Database['public']['Tables']> =
+  Database['public']['Tables'][T]['Update'];
 
 // 具体的な型エイリアス
 export type User = Tables<'users'>;

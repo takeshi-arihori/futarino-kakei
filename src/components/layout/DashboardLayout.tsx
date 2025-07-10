@@ -3,7 +3,7 @@
 import { ReactNode, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Sidebar from './Sidebar';
-import BottomNavigation from './BottomNavigation';
+// import BottomNavigation from './BottomNavigation'; // Currently unused - mobile navigation is handled by MobileLayout
 import MobileLayout from './MobileLayout';
 
 interface DashboardLayoutProps {

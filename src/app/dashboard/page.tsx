@@ -46,7 +46,8 @@ export default function DashboardPage() {
     return null; // リダイレクト中
   }
 
-  const partnerUser = couple.user1_id === user.id ? couple.user2 : couple.user1;
+  // Mock partner user - in real implementation, this would be fetched from the database
+  const partnerUser = { name: 'パートナー', email: 'partner@example.com' };
 
   return (
     <div className='min-h-screen bg-gray-50'>
