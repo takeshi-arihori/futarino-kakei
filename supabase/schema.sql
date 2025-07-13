@@ -1,7 +1,7 @@
 -- カップル・夫婦専用家計アプリ「ふたりの家計」データベーススキーマ
 
 -- Enable RLS (Row Level Security)
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret';
+-- Note: JWT secret is automatically configured by Supabase
 
 -- NextAuth.js用のユーザーテーブル
 CREATE TABLE IF NOT EXISTS users (
@@ -125,33 +125,33 @@ CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read);
 -- usersテーブルのRLS
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own profile" ON users
-  FOR SELECT USING (auth.uid() = id);
+  FOR SELECT USING (auth.uid()::text = id);
 CREATE POLICY "Users can update own profile" ON users
-  FOR UPDATE USING (auth.uid() = id);
+  FOR UPDATE USING (auth.uid()::text = id);
 
 -- couplesテーブルのRLS
 ALTER TABLE couples ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own couples" ON couples
-  FOR SELECT USING (auth.uid() = user1_id OR auth.uid() = user2_id);
+  FOR SELECT USING (auth.uid()::text = user1_id OR auth.uid()::text = user2_id);
 CREATE POLICY "Users can create couples" ON couples
-  FOR INSERT WITH CHECK (auth.uid() = user1_id OR auth.uid() = user2_id);
+  FOR INSERT WITH CHECK (auth.uid()::text = user1_id OR auth.uid()::text = user2_id);
 CREATE POLICY "Users can update own couples" ON couples
-  FOR UPDATE USING (auth.uid() = user1_id OR auth.uid() = user2_id);
+  FOR UPDATE USING (auth.uid()::text = user1_id OR auth.uid()::text = user2_id);
 
 -- categoriesテーブルのRLS
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view couple categories" ON categories
   FOR SELECT USING (
     couple_id IN (
-      SELECT id FROM couples 
-      WHERE auth.uid() = user1_id OR auth.uid() = user2_id
+      SELECT c.id FROM couples c
+      WHERE auth.uid()::text = c.user1_id OR auth.uid()::text = c.user2_id
     )
   );
 CREATE POLICY "Users can manage couple categories" ON categories
   FOR ALL USING (
     couple_id IN (
-      SELECT id FROM couples 
-      WHERE auth.uid() = user1_id OR auth.uid() = user2_id
+      SELECT c.id FROM couples c
+      WHERE auth.uid()::text = c.user1_id OR auth.uid()::text = c.user2_id
     )
   );
 
@@ -160,15 +160,15 @@ ALTER TABLE expenses ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view couple expenses" ON expenses
   FOR SELECT USING (
     couple_id IN (
-      SELECT id FROM couples 
-      WHERE auth.uid() = user1_id OR auth.uid() = user2_id
+      SELECT c.id FROM couples c
+      WHERE auth.uid()::text = c.user1_id OR auth.uid()::text = c.user2_id
     )
   );
 CREATE POLICY "Users can manage couple expenses" ON expenses
   FOR ALL USING (
     couple_id IN (
-      SELECT id FROM couples 
-      WHERE auth.uid() = user1_id OR auth.uid() = user2_id
+      SELECT c.id FROM couples c
+      WHERE auth.uid()::text = c.user1_id OR auth.uid()::text = c.user2_id
     )
   );
 
@@ -177,15 +177,15 @@ ALTER TABLE settlements ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view couple settlements" ON settlements
   FOR SELECT USING (
     couple_id IN (
-      SELECT id FROM couples 
-      WHERE auth.uid() = user1_id OR auth.uid() = user2_id
+      SELECT c.id FROM couples c
+      WHERE auth.uid()::text = c.user1_id OR auth.uid()::text = c.user2_id
     )
   );
 CREATE POLICY "Users can manage couple settlements" ON settlements
   FOR ALL USING (
     couple_id IN (
-      SELECT id FROM couples 
-      WHERE auth.uid() = user1_id OR auth.uid() = user2_id
+      SELECT c.id FROM couples c
+      WHERE auth.uid()::text = c.user1_id OR auth.uid()::text = c.user2_id
     )
   );
 
@@ -194,33 +194,33 @@ ALTER TABLE settlement_expenses ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view settlement expenses" ON settlement_expenses
   FOR SELECT USING (
     settlement_id IN (
-      SELECT id FROM settlements s
+      SELECT s.id FROM settlements s
       JOIN couples c ON s.couple_id = c.id
-      WHERE auth.uid() = c.user1_id OR auth.uid() = c.user2_id
+      WHERE auth.uid()::text = c.user1_id OR auth.uid()::text = c.user2_id
     )
   );
 CREATE POLICY "Users can manage settlement expenses" ON settlement_expenses
   FOR ALL USING (
     settlement_id IN (
-      SELECT id FROM settlements s
+      SELECT s.id FROM settlements s
       JOIN couples c ON s.couple_id = c.id
-      WHERE auth.uid() = c.user1_id OR auth.uid() = c.user2_id
+      WHERE auth.uid()::text = c.user1_id OR auth.uid()::text = c.user2_id
     )
   );
 
 -- notificationsテーブルのRLS
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own notifications" ON notifications
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT USING (auth.uid()::text = user_id);
 CREATE POLICY "Users can update own notifications" ON notifications
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING (auth.uid()::text = user_id);
 
 -- notification_settingsテーブルのRLS
 ALTER TABLE notification_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own notification settings" ON notification_settings
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT USING (auth.uid()::text = user_id);
 CREATE POLICY "Users can manage own notification settings" ON notification_settings
-  FOR ALL USING (auth.uid() = user_id);
+  FOR ALL USING (auth.uid()::text = user_id);
 
 -- デフォルトカテゴリの挿入用ファンクション
 CREATE OR REPLACE FUNCTION create_default_categories(couple_uuid UUID)

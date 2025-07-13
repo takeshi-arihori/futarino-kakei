@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-// import { useRouter } from 'next/navigation'; // TODO: Use when signup is implemented
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function SignUpPage() {
@@ -12,12 +12,14 @@ export default function SignUpPage() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  // const router = useRouter(); // TODO: Use when signup is implemented
+  const [success, setSuccess] = useState('');
+  const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     if (password !== confirmPassword) {
       setError('パスワードが一致しません');
@@ -26,11 +28,31 @@ export default function SignUpPage() {
     }
 
     try {
-      // TODO: ここでSupabaseの認証を使用してユーザー登録
-      // 現在はプレースホルダー
-      setError(
-        '現在、ユーザー登録機能は準備中です。ソーシャルログインをご利用ください。'
-      );
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'ユーザー登録に失敗しました');
+        return;
+      }
+
+      setSuccess(data.message);
+      
+      // 3秒後にログインページにリダイレクト
+      setTimeout(() => {
+        router.push('/signin');
+      }, 3000);
     } catch {
       setError('ユーザー登録に失敗しました');
     } finally {
@@ -135,10 +157,15 @@ export default function SignUpPage() {
           </div>
 
           {/* メール・パスワード登録 */}
-          <form className='space-y-6' onSubmit={handleSignUp}>
+          <form className='space-y-6' onSubmit={handleSignUp} suppressHydrationWarning>
             {error && (
               <div className='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded'>
                 {error}
+              </div>
+            )}
+            {success && (
+              <div className='bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded'>
+                {success}
               </div>
             )}
 
@@ -156,6 +183,9 @@ export default function SignUpPage() {
                 placeholder='お名前'
                 value={name}
                 onChange={e => setName(e.target.value)}
+                data-1p-ignore
+                data-lpignore
+                data-form-type='other'
               />
             </div>
 
@@ -173,6 +203,9 @@ export default function SignUpPage() {
                 placeholder='メールアドレス'
                 value={email}
                 onChange={e => setEmail(e.target.value)}
+                data-1p-ignore
+                data-lpignore
+                data-form-type='other'
               />
             </div>
 
@@ -191,6 +224,9 @@ export default function SignUpPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 minLength={8}
+                data-1p-ignore
+                data-lpignore
+                data-form-type='other'
               />
             </div>
 
@@ -208,6 +244,9 @@ export default function SignUpPage() {
                 placeholder='パスワード確認'
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
+                data-1p-ignore
+                data-lpignore
+                data-form-type='other'
               />
             </div>
 
