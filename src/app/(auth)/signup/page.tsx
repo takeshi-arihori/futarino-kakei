@@ -21,6 +21,12 @@ export default function SignUpPage() {
     setError('');
     setSuccess('');
 
+    if (password.length < 8) {
+      setError('パスワードは8文字以上である必要があります');
+      setLoading(false);
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('パスワードが一致しません');
       setLoading(false);
@@ -48,7 +54,7 @@ export default function SignUpPage() {
       }
 
       setSuccess(data.message);
-      
+
       // 3秒後にログインページにリダイレクト
       setTimeout(() => {
         router.push('/signin');
@@ -157,7 +163,11 @@ export default function SignUpPage() {
           </div>
 
           {/* メール・パスワード登録 */}
-          <form className='space-y-6' onSubmit={handleSignUp} suppressHydrationWarning>
+          <form
+            className='space-y-6'
+            onSubmit={handleSignUp}
+            suppressHydrationWarning
+          >
             {error && (
               <div className='bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded'>
                 {error}

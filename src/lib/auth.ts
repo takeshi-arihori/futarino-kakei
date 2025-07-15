@@ -17,7 +17,7 @@ export const authOptions: NextAuthOptions = {
       name: 'Email and Password',
       credentials: {
         email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -42,14 +42,18 @@ export const authOptions: NextAuthOptions = {
         } catch {
           return null;
         }
-      }
+      },
     }),
     // Development credentials provider for testing
     CredentialsProvider({
       name: 'Development Login',
       credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'test@example.com' },
-        password: { label: 'Password', type: 'password' }
+        email: {
+          label: 'Email',
+          type: 'email',
+          placeholder: 'test@example.com',
+        },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         // This is for development only - always allows login
@@ -61,24 +65,30 @@ export const authOptions: NextAuthOptions = {
           };
         }
         return null;
-      }
+      },
     }),
     // OAuth providers are temporarily disabled for development
     // Enable when actual OAuth credentials are configured
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET &&
-      process.env.GOOGLE_CLIENT_ID !== 'your_google_client_id' ? [
-      GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      })
-    ] : []),
-    ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET &&
-      process.env.GITHUB_CLIENT_ID !== 'your_github_client_id' ? [
-      GitHubProvider({
-        clientId: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      })
-    ] : []),
+    ...(process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET &&
+    process.env.GOOGLE_CLIENT_ID !== 'your_google_client_id'
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : []),
+    ...(process.env.GITHUB_CLIENT_ID &&
+    process.env.GITHUB_CLIENT_SECRET &&
+    process.env.GITHUB_CLIENT_ID !== 'your_github_client_id'
+      ? [
+          GitHubProvider({
+            clientId: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+          }),
+        ]
+      : []),
   ],
   session: {
     strategy: 'jwt',

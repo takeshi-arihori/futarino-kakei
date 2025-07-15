@@ -1,27 +1,45 @@
 import { createClient } from '@supabase/supabase-js';
+import { env } from './env';
+import { logger } from './logger';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Supabase環境変数が設定されていません。NEXT_PUBLIC_SUPABASE_URLとNEXT_PUBLIC_SUPABASE_ANON_KEYを.env.localに設定してください。'
-  );
-}
+const supabaseUrl = env.get('NEXT_PUBLIC_SUPABASE_URL');
+const supabaseAnonKey = env.get('NEXT_PUBLIC_SUPABASE_ANON_KEY');
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // サーバーサイド用（Service Role Key使用）
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// クライアント側では作成しない
+export const supabaseAdmin: ReturnType<typeof createClient> | null = (() => {
+  // サーバーサイドでのみ作成
+  if (typeof window !== 'undefined') {
+    return null; // クライアント側ではnullを返す
+  }
+  
+  const supabaseServiceRoleKey = env.get('SUPABASE_SERVICE_ROLE_KEY');
+  
+  if (!supabaseServiceRoleKey) {
+    console.warn('SUPABASE_SERVICE_ROLE_KEY is not set');
+    return null;
+  }
+  
+  return createClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+})();
 
-export const supabaseAdmin = supabaseServiceRoleKey
-  ? createClient(supabaseUrl, supabaseServiceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    })
-  : null;
+// クライアント側ではログを出力しない
+if (typeof window === 'undefined') {
+  // サーバーサイドでのみログ出力
+  logger.info('Supabaseクライアント初期化完了', {
+    feature: 'supabase',
+    action: 'initialize',
+    url: supabaseUrl,
+    hasServiceRole: !!supabaseAdmin,
+  });
+}
 
 // TypeScript型定義
 export type Database = {
@@ -59,25 +77,22 @@ export type Database = {
         Row: {
           id: string;
           user1_id: string;
-          user2_id: string;
+          user2_id: string | null;
           name: string | null;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
           user1_id: string;
-          user2_id: string;
+          user2_id?: string | null;
           name?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
           user1_id?: string;
-          user2_id?: string;
+          user2_id?: string | null;
           name?: string | null;
-          updated_at?: string;
         };
       };
       categories: {
