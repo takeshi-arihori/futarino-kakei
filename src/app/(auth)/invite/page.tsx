@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 
-export default function InvitePage() {
+function InviteForm() {
   const [inviteCode, setInviteCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -18,11 +18,11 @@ export default function InvitePage() {
   // URLパラメータから招待コードを取得
   const codeFromUrl = searchParams.get('code');
 
-  useState(() => {
+  useEffect(() => {
     if (codeFromUrl) {
       setInviteCode(codeFromUrl);
     }
-  });
+  }, [codeFromUrl]);
 
   const handleJoinCouple = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,5 +138,19 @@ export default function InvitePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function InvitePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className='min-h-screen flex items-center justify-center'>
+          <div className='text-gray-500'>読み込み中...</div>
+        </div>
+      }
+    >
+      <InviteForm />
+    </Suspense>
   );
 }

@@ -36,31 +36,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('id', userId)
         .single();
 
-      if (userError) throw userError;
-      setUser(userData);
-
-      // カップル情報を取得
-      const { data: coupleData, error: coupleError } = await supabase
-        .from('couples')
-        .select(
-          `
-          *,
-          user1:users!couples_user1_id_fkey(id, name, email, image),
-          user2:users!couples_user2_id_fkey(id, name, email, image)
-        `
-        )
-        .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
-        .eq('status', 'active')
-        .single();
-
-      if (coupleError && coupleError.code !== 'PGRST116') {
-        // PGRST116 は "no rows returned" エラー（カップルが存在しない場合）
-        throw coupleError;
+      if (userError) {
+        // usersテーブルにデータがない場合、セッションから基本情報を使用
+        if (userError.code === 'PGRST116' && session?.user) {
+          console.warn('usersテーブルにデータが存在しません。セッション情報を使用します。');
+          const fallbackUser: User = {
+            id: session.user.id!,
+            name: session.user.name || null,
+            email: session.user.email!,
+            email_verified: null,
+            image: session.user.image || null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          setUser(fallbackUser);
+        } else {
+          console.error('usersテーブルからのデータ取得エラー:', userError);
+          throw userError;
+        }
+      } else {
+        setUser(userData);
       }
 
-      setCouple(coupleData || null);
+      // カップル情報を取得（簡潔なクエリで確認）
+      const { data: coupleData, error: coupleError } = await supabase
+        .from('couples')
+        .select('*')
+        .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
+        .maybeSingle();
+
+      if (coupleError) {
+        console.error('couplesテーブルからのデータ取得エラー:', coupleError);
+        // カップル情報の取得エラーは致命的ではないので、継続
+        setCouple(null);
+      } else {
+        setCouple(coupleData || null);
+      }
     } catch (err) {
       console.error('Failed to fetch user data:', err);
+      // エラーの詳細情報をログに出力
+      if (err && typeof err === 'object' && 'message' in err) {
+        console.error('エラーメッセージ:', (err as Error).message);
+      }
+      if (err && typeof err === 'object' && 'code' in err) {
+        console.error('エラーコード:', (err as any).code);
+      }
+      if (err && typeof err === 'object' && 'details' in err) {
+        console.error('エラー詳細:', (err as any).details);
+      }
       setError(
         err instanceof Error ? err.message : 'データの取得に失敗しました'
       );
@@ -82,33 +105,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setError(null);
 
-      // 招待コード生成
-      const { data: inviteCodeData, error: codeError } = await supabase.rpc(
-        'generate_invite_code'
-      );
+      console.log('カップル作成開始 - ユーザーID:', session.user.id);
+      console.log('カップル名:', name);
 
-      if (codeError) throw codeError;
+      // サーバーサイドAPIでカップルを作成
+      const response = await fetch('/api/couples', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name }),
+      });
 
-      // カップル作成
-      const { data: coupleData, error: coupleError } = await supabase
-        .from('couples')
-        .insert({
-          user1_id: session.user.id,
-          name,
-          invite_code: inviteCodeData,
-          invite_expires_at: new Date(
-            Date.now() + 7 * 24 * 60 * 60 * 1000
-          ).toISOString(), // 7日後
-          status: 'pending',
-        })
-        .select()
-        .single();
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'カップルの作成に失敗しました');
+      }
 
-      if (coupleError) throw coupleError;
+      const { couple } = await response.json();
+      console.log('カップル作成成功:', couple);
 
       await refreshUserData();
-      return coupleData;
+      return couple;
     } catch (err) {
+      console.error('createCouple function error:', err);
       const errorMessage =
         err instanceof Error ? err.message : 'カップルの作成に失敗しました';
       setError(errorMessage);

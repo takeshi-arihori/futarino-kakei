@@ -1,0 +1,261 @@
+
+> futarino-kakei@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use, using available port 3002 instead.
+   ▲ Next.js 15.3.5 (Turbopack)
+   - Local:        http://localhost:3002
+   - Network:      http://192.168.11.6:3002
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ⚠ Invalid next.config.js options detected: 
+ ⚠     Unrecognized key(s) in object: 'appDir' at "experimental"
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+Slow filesystem detected. If /Users/takeshi-arihori/code/project/futarino-kakei/.next is a network drive, consider moving it to a local folder. If you have an antivirus enabled, consider excluding your project directory.
+ ○ Compiling middleware ...
+ ✓ Compiled middleware in 1463ms
+ ✓ Ready in 5.1s
+ ○ Compiling /api/auth/signup ...
+ ✓ Compiled /api/auth/signup in 951ms
+[2025-07-13T13:58:06.068Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T13:58:06.072Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+[2025-07-13T13:58:06.086Z] INFO  | API リクエスト | {"action":"request","feature":"api","method":"POST","path":"/api/auth/signup","requestId":"6ff6657b-dc89-4f4f-896e-a8af61f9a8cc"}
+(node:3730) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[2025-07-13T13:58:06.280Z] INFO  | ユーザー登録試行 | {"action":"signup","feature":"auth","email":"te***@example.com","success":false}
+[2025-07-13T13:58:06.280Z] ERROR | ユーザー登録失敗 | {"action":"signup","feature":"auth","email":"te***@example.com"} | ERROR: Email address "test@example.com" is invalid
+AuthApiError: Email address "test@example.com" is invalid
+    at handleError (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/node_modules_@supabase_auth-js_dist_module_4e4e8dc6._.js:757:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async _handleRequest (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/node_modules_@supabase_auth-js_dist_module_4e4e8dc6._.js:807:9)
+    at async _request (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/node_modules_@supabase_auth-js_dist_module_4e4e8dc6._.js:787:18)
+    at async SupabaseAuthClient.signUp (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/node_modules_@supabase_auth-js_dist_module_4e4e8dc6._.js:1754:23)
+    at async POST (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/[root-of-the-server]__2070bead._.js:823:37)
+    at async AppRouteRouteModule.do (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:26:34112)
+    at async AppRouteRouteModule.handle (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:26:41338)
+    at async doRender (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:1518:42)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:1920:28)
+    at async DevServer.renderPageComponent (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:2408:24)
+    at async DevServer.renderToResponseImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:2445:32)
+    at async DevServer.pipeImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:1008:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/next-server.js:305:17)
+    at async DevServer.handleRequestImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:900:17)
+    at async /Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/dev/next-dev-server.js:371:20
+    at async Span.traceAsyncFn (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/trace/trace.js:157:20)
+    at async DevServer.handleRequest (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/dev/next-dev-server.js:368:24)
+    at async invokeRender (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/lib/router-server.js:237:21)
+    at async handleRequest (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/lib/router-server.js:428:24)
+    at async requestHandlerImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/lib/router-server.js:452:13)
+    at async Server.requestListener (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/lib/start-server.js:158:13)
+[2025-07-13T13:58:06.282Z] INFO  | API レスポンス | {"action":"response","feature":"api","method":"POST","path":"/api/auth/signup","status":400,"requestId":"6ff6657b-dc89-4f4f-896e-a8af61f9a8cc"}
+ POST /api/auth/signup 400 in 1403ms
+[2025-07-13T14:00:05.654Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:00:05.662Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+[2025-07-13T14:00:05.665Z] INFO  | API リクエスト | {"action":"request","feature":"api","method":"POST","path":"/api/auth/signup","requestId":"7b379d9e-151b-4e08-9e9b-75029d9ef88a"}
+[2025-07-13T14:00:06.245Z] INFO  | 開発環境: 管理者APIでユーザー作成 | {"action":"signup","feature":"auth","email":"fi***@gmail.com","requestId":"7b379d9e-151b-4e08-9e9b-75029d9ef88a","method":"admin_api"}
+[2025-07-13T14:00:06.374Z] DEBUG | データベース操作 | {"action":"insert","feature":"database","table":"users","success":false}
+[2025-07-13T14:00:06.374Z] ERROR | データベースエラー | {"action":"insert","feature":"database","table":"users"} | ERROR: new row violates row-level security policy for table "users"
+[2025-07-13T14:00:06.374Z] WARN  | ユーザー情報のDB保存に失敗（Authは成功） | {"action":"signup","feature":"auth","userId":"d9fc2317-b522-4989-9e6b-bf0ccbd4b2c2","email":"fi***@gmail.com","requestId":"7b379d9e-151b-4e08-9e9b-75029d9ef88a"}
+[2025-07-13T14:00:06.374Z] INFO  | ユーザー登録試行 | {"action":"signup","feature":"auth","email":"fi***@gmail.com","success":true}
+[2025-07-13T14:00:06.374Z] INFO  | API レスポンス | {"action":"response","feature":"api","method":"POST","path":"/api/auth/signup","status":201,"userId":"d9fc2317-b522-4989-9e6b-bf0ccbd4b2c2","requestId":"7b379d9e-151b-4e08-9e9b-75029d9ef88a"}
+ POST /api/auth/signup 201 in 885ms
+[2025-07-13T14:03:33.787Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:03:33.789Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+[2025-07-13T14:03:33.792Z] INFO  | API リクエスト | {"action":"request","feature":"api","method":"POST","path":"/api/auth/signup","requestId":"89ad2244-75b3-43ba-9ac2-915a9599ad13"}
+[2025-07-13T14:03:34.385Z] INFO  | 開発環境: 管理者APIでユーザー作成 | {"action":"signup","feature":"auth","email":"te***@gmail.com","requestId":"89ad2244-75b3-43ba-9ac2-915a9599ad13","method":"admin_api"}
+[2025-07-13T14:03:34.468Z] DEBUG | データベース操作 | {"action":"insert","feature":"database","table":"users","success":false}
+[2025-07-13T14:03:34.468Z] ERROR | データベースエラー | {"action":"insert","feature":"database","table":"users"} | ERROR: new row violates row-level security policy for table "users"
+[2025-07-13T14:03:34.468Z] WARN  | ユーザー情報のDB保存に失敗（Authは成功） | {"action":"signup","feature":"auth","userId":"b19840e9-c0ac-40c6-b6de-dcc5a5140bbe","email":"te***@gmail.com","requestId":"89ad2244-75b3-43ba-9ac2-915a9599ad13"}
+[2025-07-13T14:03:34.469Z] INFO  | ユーザー登録試行 | {"action":"signup","feature":"auth","email":"te***@gmail.com","success":true}
+[2025-07-13T14:03:34.469Z] INFO  | API レスポンス | {"action":"response","feature":"api","method":"POST","path":"/api/auth/signup","status":201,"userId":"b19840e9-c0ac-40c6-b6de-dcc5a5140bbe","requestId":"89ad2244-75b3-43ba-9ac2-915a9599ad13"}
+ POST /api/auth/signup 201 in 910ms
+[2025-07-13T14:09:11.850Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:09:11.852Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+[2025-07-13T14:09:11.854Z] INFO  | API リクエスト | {"action":"request","feature":"api","method":"POST","path":"/api/auth/signup","requestId":"5e627675-43bf-4bdd-b2a0-d4a949b708e6"}
+[2025-07-13T14:09:12.425Z] INFO  | 開発環境: 管理者APIでユーザー作成 | {"action":"signup","feature":"auth","email":"te***@test.com","requestId":"5e627675-43bf-4bdd-b2a0-d4a949b708e6","method":"admin_api","domain":"test.com"}
+[2025-07-13T14:09:12.530Z] DEBUG | データベース操作 | {"action":"insert","feature":"database","table":"users","success":false}
+[2025-07-13T14:09:12.531Z] ERROR | データベースエラー | {"action":"insert","feature":"database","table":"users"} | ERROR: new row violates row-level security policy for table "users"
+[2025-07-13T14:09:12.531Z] WARN  | ユーザー情報のDB保存に失敗（Authは成功） | {"action":"signup","feature":"auth","userId":"cb9f3563-5710-436a-ba47-099c0c4395b1","email":"te***@test.com","requestId":"5e627675-43bf-4bdd-b2a0-d4a949b708e6"}
+[2025-07-13T14:09:12.531Z] INFO  | ユーザー登録試行 | {"action":"signup","feature":"auth","email":"te***@test.com","success":true}
+[2025-07-13T14:09:12.531Z] INFO  | API レスポンス | {"action":"response","feature":"api","method":"POST","path":"/api/auth/signup","status":201,"userId":"cb9f3563-5710-436a-ba47-099c0c4395b1","requestId":"5e627675-43bf-4bdd-b2a0-d4a949b708e6"}
+ POST /api/auth/signup 201 in 883ms
+Middleware called for: /
+ ○ Compiling / ...
+ ✓ Compiled / in 2.9s
+[2025-07-13T14:09:26.452Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:09:26.456Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+ GET / 200 in 3169ms
+Middleware called for: /.well-known/appspecific/com.chrome.devtools.json
+ ○ Compiling /_not-found/page ...
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 3947ms
+ ✓ Compiled /_not-found/page in 4.6s
+[2025-07-13T14:09:32.177Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:09:32.183Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+(node:16943) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[next-auth][warn][DEBUG_ENABLED] 
+https://next-auth.js.org/warnings#debug_enabled
+ GET /api/auth/session 200 in 3540ms
+Middleware called for: /signup
+ ○ Compiling /signup ...
+ ✓ Compiled /signup in 1613ms
+ GET /signup 200 in 1720ms
+[2025-07-13T14:09:52.001Z] INFO  | API リクエスト | {"action":"request","feature":"api","method":"POST","path":"/api/auth/signup","requestId":"f6c4de5f-4a60-48eb-9182-39d1ac267cd5"}
+[2025-07-13T14:09:53.714Z] DEBUG | データベース操作 | {"action":"insert","feature":"database","table":"users","success":false}
+[2025-07-13T14:09:53.714Z] ERROR | データベースエラー | {"action":"insert","feature":"database","table":"users"} | ERROR: new row violates row-level security policy for table "users"
+[2025-07-13T14:09:53.714Z] WARN  | ユーザー情報のDB保存に失敗（Authは成功） | {"action":"signup","feature":"auth","userId":"00be81a7-fde2-42cd-8870-6bca13c6f994","email":"me***@tets.com","requestId":"f6c4de5f-4a60-48eb-9182-39d1ac267cd5"}
+[2025-07-13T14:09:53.715Z] INFO  | ユーザー登録試行 | {"action":"signup","feature":"auth","email":"me***@tets.com","success":true}
+[2025-07-13T14:09:53.715Z] INFO  | API レスポンス | {"action":"response","feature":"api","method":"POST","path":"/api/auth/signup","status":201,"userId":"00be81a7-fde2-42cd-8870-6bca13c6f994","requestId":"f6c4de5f-4a60-48eb-9182-39d1ac267cd5"}
+ POST /api/auth/signup 201 in 1771ms
+Middleware called for: /signin
+ ○ Compiling /signin ...
+ ✓ Compiled /signin in 880ms
+ GET /signin 200 in 973ms
+Middleware called for: /
+ GET / 200 in 91ms
+Middleware called for: /.well-known/appspecific/com.chrome.devtools.json
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 116ms
+ GET /api/auth/session 200 in 149ms
+[2025-07-13T14:10:50.393Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:10:50.400Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+(node:18224) [DEP0040] D[?25h
+ionWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Middleware called for: /signup
+ GET /signup 200 in 57ms
+[2025-07-13T14:11:02.783Z] INFO  | API リクエスト | {"action":"request","feature":"api","method":"POST","path":"/api/auth/signup","requestId":"c313ba95-4098-44ce-88f9-92aac5b39708"}
+[2025-07-13T14:11:04.786Z] DEBUG | データベース操作 | {"action":"insert","feature":"database","table":"users","success":false}
+[2025-07-13T14:11:04.786Z] ERROR | データベースエラー | {"action":"insert","feature":"database","table":"users"} | ERROR: new row violates row-level security policy for table "users"
+[2025-07-13T14:11:04.787Z] WARN  | ユーザー情報のDB保存に失敗（Authは成功） | {"action":"signup","feature":"auth","userId":"c39b044e-2c3c-426a-92ab-4661f0ab047a","email":"ar***@icloud.com","requestId":"c313ba95-4098-44ce-88f9-92aac5b39708"}
+[2025-07-13T14:11:04.787Z] INFO  | ユーザー登録試行 | {"action":"signup","feature":"auth","email":"ar***@icloud.com","success":true}
+[2025-07-13T14:11:04.787Z] INFO  | API レスポンス | {"action":"response","feature":"api","method":"POST","path":"/api/auth/signup","status":201,"userId":"c39b044e-2c3c-426a-92ab-4661f0ab047a","requestId":"c313ba95-4098-44ce-88f9-92aac5b39708"}
+ POST /api/auth/signup 201 in 2057ms
+Middleware called for: /signin
+ GET /signin 200 in 51ms
+ GET /api/auth/providers 200 in 60ms
+ GET /api/auth/csrf 200 in 63ms
+JWT callback - account: {
+  providerAccountId: 'c39b044e-2c3c-426a-92ab-4661f0ab047a',
+  type: 'credentials',
+  provider: 'credentials'
+}
+ POST /api/auth/callback/credentials 200 in 226ms
+JWT callback - account: undefined
+ GET /api/auth/session 200 in 62ms
+Middleware called for: /dashboard
+ ○ Compiling /dashboard ...
+[2025-07-13T14:12:04.105Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:12:04.112Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+(node:19074) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ Compiled /dashboard in 1974ms
+ GET /dashboard 200 in 2021ms
+Middleware called for: /expenses
+ ○ Compiling /expenses ...
+ ✓ Compiled /expenses in 1466ms
+ GET /expenses 200 in 1545ms
+Middleware called for: /dashboard
+ GET /dashboard 200 in 58ms
+ ✓ Compiled in 395ms
+Middleware called for: /
+[2025-07-13T14:14:07.473Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:14:07.485Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+ GET / 200 in 438ms
+Middleware called for: /.well-known/appspecific/com.chrome.devtools.json
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 435ms
+JWT callback - account: undefined
+ GET /api/auth/session 200 in 230ms
+Middleware called for: /onboarding
+ ○ Compiling /onboarding ...
+[2025-07-13T14:14:11.098Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:14:11.111Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+(node:20559) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ Compiled /onboarding in 2.2s
+ GET /onboarding 200 in 2238ms
+ ✓ Compiled in 219ms
+[2025-07-13T14:15:36.318Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:15:36.323Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+[2025-07-13T14:15:36.328Z] INFO  | API リクエスト | {"action":"request","feature":"api","method":"POST","path":"/api/auth/signup","requestId":"0c4a5351-9653-49af-b7f0-2d70cacd12be"}
+[2025-07-13T14:15:36.544Z] INFO  | 開発環境: 管理者APIでユーザー作成 | {"action":"signup","feature":"auth","email":"te***@gmail.com","requestId":"0c4a5351-9653-49af-b7f0-2d70cacd12be","method":"admin_api","domain":"gmail.com"}
+[2025-07-13T14:15:36.630Z] DEBUG | データベース操作 | {"action":"insert","feature":"database","table":"users","success":true}
+[2025-07-13T14:15:36.630Z] INFO  | ユーザー情報をusersテーブルに正常保存 | {"action":"signup","feature":"database","userId":"41dbcf13-ebf9-46b9-b9c8-8248d16caa7a","requestId":"0c4a5351-9653-49af-b7f0-2d70cacd12be"}
+[2025-07-13T14:15:36.631Z] INFO  | ユーザー登録試行 | {"action":"signup","feature":"auth","email":"te***@gmail.com","success":true}
+[2025-07-13T14:15:36.631Z] INFO  | API レスポンス | {"action":"response","feature":"api","method":"POST","path":"/api/auth/signup","status":201,"userId":"41dbcf13-ebf9-46b9-b9c8-8248d16caa7a","requestId":"0c4a5351-9653-49af-b7f0-2d70cacd12be"}
+ POST /api/auth/signup 201 in 563ms
+[?25h
+vironment":"development","oauth_providers":[]}
+[2025-07-13T14:05:17.433Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+(node:13022) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[2025-07-13T14:05:26.530Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:05:26.534Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+[2025-07-13T14:05:26.538Z] INFO  | API リクエスト | {"action":"request","feature":"api","method":"POST","path":"/api/auth/signup","requestId":"d34b58b1-5c89-42b9-a445-308485d79652"}
+[2025-07-13T14:05:27.116Z] INFO  | ユーザー登録試行 | {"action":"signup","feature":"auth","email":"te***@test.com","success":false}
+[2025-07-13T14:05:27.116Z] ERROR | ユーザー登録失敗 | {"action":"signup","feature":"auth","email":"te***@test.com"} | ERROR: Email address "test@test.com" is invalid
+AuthApiError: Email address "test@test.com" is invalid
+    at handleError (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/node_modules_@supabase_auth-js_dist_module_4e4e8dc6._.js:757:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async _handleRequest (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/node_modules_@supabase_auth-js_dist_module_4e4e8dc6._.js:807:9)
+    at async _request (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/node_modules_@supabase_auth-js_dist_module_4e4e8dc6._.js:787:18)
+    at async SupabaseAuthClient.signUp (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/node_modules_@supabase_auth-js_dist_module_4e4e8dc6._.js:1754:23)
+    at async POST (/Users/takeshi-arihori/code/project/futarino-kakei/.next/server/chunks/[root-of-the-server]__2070bead._.js:837:37)
+    at async AppRouteRouteModule.do (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:26:34112)
+    at async AppRouteRouteModule.handle (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:26:41338)
+    at async doRender (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:1518:42)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:1920:28)
+    at async DevServer.renderPageComponent (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:2408:24)
+    at async DevServer.renderToResponseImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:2445:32)
+    at async DevServer.pipeImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:1008:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/next-server.js:305:17)
+    at async DevServer.handleRequestImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/base-server.js:900:17)
+    at async /Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/dev/next-dev-server.js:371:20
+    at async Span.traceAsyncFn (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/trace/trace.js:157:20)
+    at async DevServer.handleRequest (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/dev/next-dev-server.js:368:24)
+    at async invokeRender (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/lib/router-server.js:237:21)
+    at async handleRequest (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/lib/router-server.js:428:24)
+    at async requestHandlerImpl (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/lib/router-server.js:452:13)
+    at async Server.requestListener (/Users/takeshi-arihori/code/project/futarino-kakei/node_modules/next/dist/server/lib/start-server.js:158:13)
+[2025-07-13T14:05:27.117Z] INFO  | API レスポンス | {"action":"response","feature":"api","method":"POST","path":"/api/auth/signup","status":400,"requestId":"d34b58b1-5c89-42b9-a445-308485d79652"}
+ POST /api/auth/signup 400 in 792ms
+Middleware called for: /.well-known/appspecific/com.chrome.devtools.json
+ ○ Compiling /_not-found/page ...
+ ✓ Compiled /_not-found/page in 1930ms
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 2160ms
+Middleware called for: /signup
+Middleware called for: /.well-known/appspecific/com.chrome.devtools.json
+ GET /signup 200 in 264ms
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 117ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 285ms
+ GET /api/auth/session 200 in 272ms
+ GET /api/auth/session 200 in 293ms
+ GET /favicon.ico 200 in 542ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 376ms
+[2025-07-13T14:07:33.945Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:07:33.951Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+(node:14646) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Middleware called for: /signup
+ GET /signup 200 in 208ms
+Middleware called for: /.well-known/appspecific/com.chrome.devtools.json
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 108ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 251ms
+ GET /api/auth/session 200 in 326ms
+ GET /api/auth/session 200 in 341ms
+ GET /favicon.ico 200 in 581ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 559ms
+[2025-07-13T14:09:17.854Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:09:17.860Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+(node:16292) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Middleware called for: /
+ GET / 200 in 157ms
+ GET /api/auth/session 200 in 77ms
+[2025-07-13T14:11:30.429Z] INFO  | 環境変数の検証が完了しました | {"feature":"environment","action":"validation","environment":"development","oauth_providers":[]}
+[2025-07-13T14:11:30.433Z] INFO  | Supabaseクライアント初期化完了 | {"feature":"supabase","action":"initialize","url":"https://mkofbxwigbjzpninmjol.supabase.co","hasServiceRole":true}
+(node:18714) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ✓ Compiled in 382ms
+ ✓ Compiled in 201ms
+[?25h
